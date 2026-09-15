@@ -34,6 +34,10 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
 @keyframes rise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}@keyframes stamp{from{opacity:0;transform:scale(1.2) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(-6deg)}}@keyframes spin{to{transform:rotate(360deg)}}.busy svg{animation:spin 1.3s linear infinite}.reveal{animation:rise .45s both}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 /* 15. RESPONSIVE */
 @media(min-width:1440px){.page{padding-top:48px}}@media(max-width:1024px){.page{max-width:960px;padding:24px}.sidebar{padding:26px 24px}.form-side{padding:26px}.header{padding:28px}.live-clock{font-size:40px}.meta{letter-spacing:.07em}}@media(max-width:700px){.page{max-width:520px;padding:18px 16px}.masthead{margin-bottom:21px}.masthead>.meta{display:none}.header{padding:23px 21px}h1{font-size:33px}.subtitle{font-size:12px}.calendar{width:67px}.calendar strong{font-size:23px}.workspace{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--line);padding:22px;gap:18px}.sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:14px}.clock-top .analog{display:none}.live-clock{font-size:32px;margin:4px 0}.live-clock span{font-size:20px}.zone{font-size:11px}.status-card{padding:16px;flex:1}.sidebar .status-heading{margin-bottom:10px}.status-title{font-size:21px}.status-copy{min-height:0;font-size:12px}.session{margin-top:12px;padding-top:9px}.session strong{font-size:24px}.timeline{margin-top:15px}.sidebar .note,.serial{display:none}.form-side{padding:24px 22px}.footer{font-size:10px;flex-wrap:wrap}.form-heading{margin-bottom:18px}.instrument{padding-left:24px;padding-right:24px}.wheel-item{font-size:37px}.sidebar-top .eyebrow{font-size:10px}.header .eyebrow{font-size:10px}.header h1{letter-spacing:-1px}.calendar small{font-size:10px}}@media(max-width:380px){.page{padding:14px 12px}.form-side{padding:22px 18px}.header{padding:21px 18px}.header h1{font-size:29px}.employee{font-size:12px}.sidebar{padding:18px}.footer{font-size:10px}} 
+/* 16. HISTORY */
+.view-tabs{display:flex;gap:24px;padding:0 36px;border-bottom:1px solid var(--line);background:#faf7f0}.view-tab{border:0;border-bottom:3px solid transparent;background:none;padding:15px 2px;font-size:14px;color:var(--muted)}.view-tab[aria-selected=true]{border-bottom-color:var(--green);color:var(--green);font-weight:650}.history{padding:30px 36px;min-height:440px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.history-head p{font-size:13px;color:var(--muted);margin-top:6px}.history-refresh,.pager button{background:var(--white);border:1px solid var(--line);border-radius:5px;padding:9px 13px;font-size:13px;display:inline-flex;gap:7px;align-items:center}.history-search{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.history-search input{padding:11px 13px;border:1px solid var(--line);border-radius:5px;flex:1;min-width:180px;background:var(--white);font-size:14px}.history-search label{font-size:14px}.history-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:6px;max-height:620px}.history table{border-collapse:collapse;width:100%;font-size:13px;min-width:770px;text-align:left}.history th{font:11px var(--mono);letter-spacing:.06em;background:#eee9de;position:sticky;top:0;padding:14px 12px;white-space:nowrap}.history td{padding:14px 12px;border-top:1px solid var(--line);vertical-align:top}.history tbody tr:nth-child(even){background:#f8f5ed}.history td:first-child{white-space:nowrap}.history .task-cell{white-space:pre-wrap;overflow-wrap:anywhere;min-width:200px;max-width:360px}.history .time-cell{font-family:var(--mono);white-space:nowrap}.history .updated-cell{font-size:12px;color:var(--muted)}.history-message{border:1px dashed var(--line);border-radius:6px;padding:35px 20px;text-align:center;color:var(--muted);font-size:14px}.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--muted)}.pager>div{display:flex;gap:8px}.history-meta{font-size:12px;color:var(--muted);margin-bottom:14px}.history .notice{margin-bottom:14px}@media(max-width:700px){.view-tabs{padding:0 22px}.history{padding:23px 18px}.history-head{align-items:flex-start}.history-head h2{font-size:23px}.history-refresh{padding:9px;font-size:12px}.history-head p{font-size:12px}.history-table-wrap{max-height:520px}}
+
+.history-filters{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:0 0 16px}.history-filters label{display:grid;gap:6px;font-size:13px;flex:1;min-width:150px}.history-filters input,.history-filters select{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink);font:14px "Segoe UI",sans-serif}.history-export{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}.history-export span{font-size:12px;color:var(--muted)}#historyExport{background:var(--green);color:var(--white);border-color:var(--green)}#historyExport:disabled{cursor:not-allowed}select:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -42,7 +46,8 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
  <nav class="masthead" aria-label="Application"><div class="brand"><span class="brand-icon"><svg><use href="#clock"/></svg></span>TIMEKEEPER<span class="meta"> / </span></div><span class="meta">A little order in your everyday.</span><div class="employee"><span class="avatar" id="initial">R</span><span id="employeeName">Rasyid</span></div></nav>
  <main class="shell">
   <header class="header"><div><p class="eyebrow">Employee timesheet</p><h1>Daily Timekeeper<span style="color:var(--brass)">.</span></h1><p class="subtitle">Record your attendance and daily work.</p></div><div class="calendar" aria-label="Today's date"><div class="day" id="badgeDay">—</div><strong id="badgeDate">—</strong><small id="badgeYear">—</small></div></header>
-  <div class="workspace">
+  <div class="view-tabs" role="tablist" aria-label="Timesheet views"><button type="button" class="view-tab" id="attendanceTab" role="tab" aria-selected="true" aria-controls="attendancePanel">Absensi</button><button type="button" class="view-tab" id="historyTab" role="tab" aria-selected="false" aria-controls="historyPanel" tabindex="-1">Riwayat</button></div>
+  <div class="workspace" id="attendancePanel" role="tabpanel" aria-labelledby="attendanceTab">
    <aside class="sidebar" aria-label="Today's attendance">
     <div class="sidebar-top"><div><div class="clock-top"><span class="eyebrow">Here & now</span><div class="analog" aria-hidden="true"><i class="hand hour" id="handHour"></i><i class="hand" id="handMinute"></i><i class="hand second" id="handSecond"></i></div></div><div class="live-clock" id="liveClock" aria-label="Current time">00:00<span>:00</span></div><p class="zone"><span class="dot"></span><span id="zoneLabel">Jakarta Time</span> · 24-hour format</p></div></div>
     <section class="status-card"><div class="status-heading"><span class="eyebrow">Today's record</span><div style="display:flex;gap:10px;align-items:center"><span class="tag" id="statusTag">UNVERIFIED</span><button class="refresh" id="refresh" aria-label="Refresh today's status"><svg><use href="#refresh"/></svg></button></div></div><h2 class="status-title" id="statusTitle">Ready when you are.</h2><p class="status-copy" id="statusCopy">Connect your timesheet to see today's attendance.</p><div class="session"><span class="eyebrow" id="sessionLabel">Current session</span><strong id="sessionTimer">— : — : —</strong></div><div class="timeline"><div class="milestone" id="inMilestone"><i class="pin"></i><b id="inTime">— : —</b>Clock In</div><div class="milestone" id="outMilestone"><i class="pin"></i><b id="outTime">— : —</b>Clock Out</div></div><button class="status-action" id="statusAction" hidden>Clock Out →</button></section>
@@ -61,6 +66,18 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
     </form>
    </section>
   </div>
+  <section class="history" id="historyPanel" role="tabpanel" aria-labelledby="historyTab" hidden>
+   <div class="history-head"><div><p class="eyebrow">Employee log / Archive</p><h2>Riwayat timesheet.</h2><p>Semua catatan di Google Sheets, dari tanggal terbaru.</p></div><button type="button" class="history-refresh" id="historyRefresh"><svg><use href="#refresh"/></svg>Refresh</button></div>
+   <div class="history-search"><label for="historySearch">Cari catatan</label><input type="search" id="historySearch" placeholder="Tanggal, jam, atau tugas…" aria-controls="historyBody"></div>
+   <div class="history-filters"><label>Dari tanggal<input type="date" id="historyFrom"></label><label>Sampai tanggal<input type="date" id="historyTo"></label><label>Status<select id="historyStatus"><option value="all">Semua status</option><option value="complete">Selesai</option><option value="working">Belum Clock Out</option><option value="incomplete">Data tidak lengkap</option></select></label><button type="button" class="history-refresh" id="historyReset">Reset filter</button></div>
+   <div class="history-export"><button type="button" class="history-refresh" id="historyExport" disabled>↓ Export Excel (.xlsx)</button><span>Ekspor semua hasil filter, termasuk halaman berikutnya.</span></div>
+   <p id="historyFilterError" class="notice" role="alert" hidden>Tanggal awal tidak boleh melewati tanggal akhir.</p>
+   <p id="historyMeta" class="history-meta" aria-live="polite">Belum dimuat.</p>
+   <div id="historyError" class="notice" role="alert" hidden></div>
+   <div id="historyMessage" class="history-message" role="status">Buka tab ini untuk memuat data.</div>
+   <div class="history-table-wrap" id="historyTable" role="region" aria-label="Tabel riwayat timesheet, geser untuk melihat seluruh kolom" tabindex="0" hidden><table><caption class="meta" style="text-align:left;padding:12px">Data tersimpan · Google Sheets</caption><thead><tr><th scope="col">Tanggal</th><th scope="col">Clock In</th><th scope="col">Clock Out</th><th scope="col">Durasi</th><th scope="col">Tugas</th><th scope="col">Terakhir diperbarui</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+   <div class="pager" id="historyPager" hidden><span id="historyPageInfo"></span><div><button type="button" id="historyPrev">← Sebelumnya</button><button type="button" id="historyNext">Berikutnya →</button></div></div>
+  </section>
  </main>
  <footer class="footer"><span>TIMEKEEPER © <span id="footerYear"></span> <span style="margin:0 7px">/</span> Attendance & Daily Work Log</span><span class="connection" id="connection"><span class="dot"></span><span id="connectionText">Not Configured</span></span></footer>
 </div>
@@ -88,7 +105,7 @@ const CONFIG = {
  employeeName:'Rasyid', timezone:'Asia/Jakarta', timezoneLabel:'Jakarta Time',
  googleAppsScriptUrl:'https://script.google.com/macros/s/AKfycbw8qriYaAk6dwfaRMAcrUVeOL0baH7mLQJyEuhtT8Krijreln6sp2Q5UtbU7Vt2Sv2k2w/exec', sheetName:'Timesheet',
  taskRequired:true, maxTaskLength:1000, timeoutMs:25000, statusRefreshMs:120000,
- pendingStorageKey:'timesheetPendingEntry', locale:'en-GB',
+ pendingStorageKey:'timesheetPendingEntry', locale:'en-GB', historyPageSize:25,
  taskChips:['Development','Testing','Documentation','Meeting','Support','Monitoring','Bug Fixing','Analysis']
 };
 /* 02. STATE */
@@ -121,6 +138,10 @@ async function api(payload){
   let result;try{result=await response.json();}catch{throw new ApiError('Invalid server response. Check the Apps Script deployment and access settings.','INVALID_RESPONSE');}
   if(!result || typeof result.success!=='boolean')throw new ApiError('Invalid API response.','INVALID_RESPONSE');
   if(!result.success)throw new ApiError(result.message||'Unable to save your entry.',result.code||'API_ERROR');
+  if(payload.action==='getHistory'){
+   if(!Array.isArray(result.data)||result.data.some(r=>!r||typeof r.date!=='string'||(r.date!==''&&!validDate(r.date))||(r.clockIn!==''&&!validTime(r.clockIn))||(r.clockOut!==''&&!validTime(r.clockOut))||typeof r.task!=='string'||typeof r.lastUpdated!=='string'))throw new ApiError('Respons riwayat tidak sesuai. Perbarui Code.gs lalu deploy versi baru.','INVALID_RESPONSE');
+   return result.data;
+  }
   if(result.data!==null && (!result.data||result.data.date!==payload.date||!validTime(result.data.clockIn)||(result.data.clockOut!==''&&!validTime(result.data.clockOut))||typeof result.data.task!=='string'))throw new ApiError('Incomplete attendance data received. Refresh to verify your record.','INVALID_RESPONSE');
   if(payload.action!=='getStatus'&&!result.data)throw new ApiError('Save could not be confirmed. Refresh your status.','INVALID_RESPONSE');
   return result.data;
@@ -163,7 +184,7 @@ async function submitEntry(e){
  if(payload.action==='clockOut'&&((CONFIG.taskRequired&&!payload.task.trim())||payload.task.length>CONFIG.maxTaskLength)){showError('Please describe your tasks, up to '+CONFIG.maxTaskLength+' characters.');$('tasks').focus();return;}
  if(payload.action==='clockOut'&&state.statusKnown&&state.record&&payload.date===state.today&&payload.clockOut<state.record.clockIn){showError('Clock Out tidak boleh lebih awal dari Clock In.');return;}
  setBusy(true);++state.statusVersion;savePending(payload,false);
- try{const data=await api(payload);clearPending();if(data.date===state.today){state.record=data;state.statusKnown=true;}connection('Synced with Google Sheets',true);renderStatus();showSuccess(data,payload.action);toast(payload.action==='clockIn'?'Clock In berhasil disimpan.':'Clock Out berhasil disimpan.','success');}
+ try{const data=await api(payload);historyState.stale=true;clearPending();if(data.date===state.today){state.record=data;state.statusKnown=true;}connection('Synced with Google Sheets',true);renderStatus();showSuccess(data,payload.action);toast(payload.action==='clockIn'?'Clock In berhasil disimpan.':'Clock Out berhasil disimpan.','success');}
  catch(error){savePending(payload,true);showError(error.message,error.code);toast(error.message,['ALREADY_CLOCKED_IN','NO_CLOCK_IN','EARLY_CLOCK_OUT'].includes(error.code)?'warning':'error');if(['NETWORK','TIMEOUT','INVALID_RESPONSE','NOT_CONFIGURED'].includes(error.code)){connection(error.code==='NOT_CONFIGURED'?'Not Configured':'Not synced');} }
  finally{setBusy(false);}
 }
@@ -188,6 +209,84 @@ function toast(message,type='info'){const el=document.createElement('div');el.cl
 function savePending(payload,show){state.pending=true;let saved=true;try{localStorage.setItem(CONFIG.pendingStorageKey,JSON.stringify({payload,endpoint:CONFIG.googleAppsScriptUrl,employee:CONFIG.employeeName,savedAt:Date.now()}));}catch{saved=false;}$('pendingText').textContent=saved?'Your entry is saved on this device. Review it and submit again.':'Device storage is unavailable. Keep this page open to retain your entry.';$('pendingNotice').hidden=!show;}
 function clearPending(){state.pending=false;try{localStorage.removeItem(CONFIG.pendingStorageKey);}catch{}$('pendingNotice').hidden=true;}
 function restorePending(){try{const draft=JSON.parse(localStorage.getItem(CONFIG.pendingStorageKey)||'null');if(!draft)return;const p=draft.payload;if(draft.endpoint!==CONFIG.googleAppsScriptUrl||draft.employee!==CONFIG.employeeName)return;if(!p||!validDate(p.date)||!['clockIn','clockOut'].includes(p.action)||!validTime(p.clockIn||p.clockOut))return;state.pending=true;changeMode(p.action);$('entryDate').value=p.date;const t=(p.clockIn||p.clockOut).split(':').map(Number);hourWheel.set(t[0]);minuteWheel.set(t[1]);if(typeof p.task==='string')$('tasks').value=p.task.slice(0,CONFIG.maxTaskLength);updateTasks();updateDate();$('pendingNotice').hidden=false;}catch{toast('The saved draft could not be restored.','warning');}}
+/* 16. HISTORY — read-only, all records with local search and pagination */
+const historyState={records:[],loaded:false,loading:false,page:1,stale:true,error:'',updated:null};
+function selectView(view){
+ const history=view==='history';
+ for(const [id,active] of [['attendanceTab',!history],['historyTab',history]]){$(id).setAttribute('aria-selected',String(active));$(id).tabIndex=active?0:-1;}
+ $('attendancePanel').hidden=history;$('historyPanel').hidden=!history;
+ if(history&&(!historyState.loaded||historyState.stale))loadHistory();
+}
+async function loadHistory(){
+ if(historyState.loading)return;historyState.loading=true;historyState.error='';$('historyRefresh').disabled=true;$('historyPanel').setAttribute('aria-busy','true');renderHistory();
+ try{historyState.records=await api({action:'getHistory'});historyState.loaded=true;historyState.stale=false;historyState.updated=new Date();historyState.page=1;}
+ catch(error){historyState.stale=true;historyState.error=error.code==='INVALID_ACTION'?'Fitur riwayat belum tersedia di backend. Salin Code.gs terbaru, lalu Deploy → Manage deployments → Edit → New version → Deploy.':error.message;}
+ finally{historyState.loading=false;$('historyRefresh').disabled=false;$('historyPanel').setAttribute('aria-busy','false');renderHistory();}
+}
+function recordStatus(r){return !r.clockIn||(r.clockOut&&r.clockOut<r.clockIn)||!r.date?'incomplete':r.clockOut?'complete':'working';}
+function invalidHistoryRange(){return $('historyFrom').value&&$('historyTo').value&&$('historyFrom').value>$('historyTo').value;}
+function historyRows(){
+ const query=$('historySearch').value.trim().toLocaleLowerCase(),from=$('historyFrom').value,to=$('historyTo').value,status=$('historyStatus').value;
+ if(invalidHistoryRange())return [];
+ return historyState.records.filter(r=>(!from||(r.date&&r.date>=from))&&(!to||(r.date&&r.date<=to))&&(status==='all'||recordStatus(r)===status)&&(!query||[r.date,r.date?prettyDate(r.date):'',r.clockIn,r.clockOut,r.task,r.lastUpdated].join(' ').toLocaleLowerCase().includes(query)));
+}
+function renderHistory(){
+ const h=historyState,rows=historyRows(),size=Math.max(1,Math.floor(CONFIG.historyPageSize)||25),pages=Math.max(1,Math.ceil(rows.length/size));h.page=Math.min(h.page,pages);
+ $('historyError').hidden=!h.error;$('historyError').textContent=h.error;
+ $('historyFilterError').hidden=!invalidHistoryRange();$('historyExport').disabled=h.loading||!h.loaded||!rows.length||!!h.error||h.stale;
+ $('historyMeta').textContent=h.loading?'Memuat data dari Google Sheets…':h.loaded?rows.length+' dari '+h.records.length+' catatan · '+(h.error?'Data terakhir; refresh belum berhasil.':'Dimuat '+h.updated.toLocaleTimeString('id-ID',{timeZone:CONFIG.timezone,hour:'2-digit',minute:'2-digit'})+' · '+CONFIG.timezoneLabel):'Data belum berhasil dimuat.';
+ $('historyMessage').hidden=rows.length>0;$('historyMessage').textContent=h.loading&&!h.loaded?'Mengambil riwayat…':!h.loaded?'Riwayat belum tersedia. Periksa koneksi, kemudian klik Refresh.':!h.records.length?'Belum ada data di Google Sheets.': 'Tidak ada catatan yang cocok dengan pencarian.';
+ $('historyTable').hidden=!rows.length;$('historyPager').hidden=!rows.length;$('historyBody').replaceChildren();
+ for(const r of rows.slice((h.page-1)*size,h.page*size)){
+  const tr=document.createElement('tr');const updated=new Date(r.lastUpdated);const updatedText=r.lastUpdated&&!isNaN(updated)?new Intl.DateTimeFormat('id-ID',{timeZone:CONFIG.timezone,day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(updated):r.lastUpdated||'—';
+  const values=[r.date?prettyDate(r.date):'Tanpa tanggal',r.clockIn||'—',r.clockOut||'—',r.clockIn&&r.clockOut&&r.clockOut>=r.clockIn?duration(r.clockIn,r.clockOut):'—',r.task||'—',updatedText];
+  values.forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i===4)td.className='task-cell';else if(i===5)td.className='updated-cell';else if(i>0)td.className='time-cell';tr.append(td);});$('historyBody').append(tr);
+ }
+ $('historyPageInfo').textContent='Halaman '+h.page+' / '+pages+' · '+size+' catatan per halaman';$('historyPrev').disabled=h.page<=1;$('historyNext').disabled=h.page>=pages;
+}
+$('attendanceTab').onclick=()=>selectView('attendance');$('historyTab').onclick=()=>selectView('history');
+for(const id of ['attendanceTab','historyTab'])$(id).addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const target=event.key==='Home'?'attendanceTab':event.key==='End'?'historyTab':id==='attendanceTab'?'historyTab':'attendanceTab';selectView(target==='historyTab'?'history':'attendance');$(target).focus();});
+$('historyRefresh').onclick=loadHistory;$('historySearch').oninput=()=>{historyState.page=1;renderHistory();};$('historyPrev').onclick=()=>{historyState.page--;renderHistory();};$('historyNext').onclick=()=>{historyState.page++;renderHistory();};
+/* 17. EXCEL EXPORT — real Office Open XML, no external library or network.
+   All values use inline strings: task text beginning with '=' is never a formula.
+   ZIP uses stored entries with CRC32; Excel opens the resulting .xlsx directly. */
+function xlsxXml(value){return String(value??'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function zipStored(files){
+ const encoder=new TextEncoder(),locals=[],central=[];let offset=0;
+ const crc32=bytes=>{let crc=0xffffffff;for(const byte of bytes){crc^=byte;for(let i=0;i<8;i++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return (crc^0xffffffff)>>>0;};
+ const header=(size)=>{const bytes=new Uint8Array(size);return {bytes,view:new DataView(bytes.buffer)};};
+ for(const [path,xml] of Object.entries(files)){
+  const name=encoder.encode(path),data=encoder.encode(xml),crc=crc32(data),local=header(30),v=local.view;
+  v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(12,33,true);v.setUint32(14,crc,true);v.setUint32(18,data.length,true);v.setUint32(22,data.length,true);v.setUint16(26,name.length,true);
+  locals.push(local.bytes,name,data);
+  const c=header(46),w=c.view;w.setUint32(0,0x02014b50,true);w.setUint16(4,20,true);w.setUint16(6,20,true);w.setUint16(14,33,true);w.setUint32(16,crc,true);w.setUint32(20,data.length,true);w.setUint32(24,data.length,true);w.setUint16(28,name.length,true);w.setUint32(42,offset,true);central.push(c.bytes,name);offset+=30+name.length+data.length;
+ }
+ const end=header(22),e=end.view,count=Object.keys(files).length;e.setUint32(0,0x06054b50,true);e.setUint16(8,count,true);e.setUint16(10,count,true);e.setUint32(12,central.reduce((n,x)=>n+x.length,0),true);e.setUint32(16,offset,true);
+ return new Blob([...locals,...central,end.bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+function makeHistoryWorkbook(records){
+ const ns='http://schemas.openxmlformats.org/spreadsheetml/2006/main',rel='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+ const rows=[['Date','Clock In','Clock Out','Duration','Task','Last Updated','Status'],...records.map(r=>[r.date,r.clockIn,r.clockOut,r.clockIn&&r.clockOut&&r.clockOut>=r.clockIn?duration(r.clockIn,r.clockOut):'',r.task,r.lastUpdated,({complete:'Selesai',working:'Belum Clock Out',incomplete:'Data tidak lengkap'})[recordStatus(r)]])];
+ const sheetRows=rows.map((row,i)=>'<row r="'+(i+1)+'">'+row.map((value,j)=>'<c r="'+String.fromCharCode(65+j)+(i+1)+'" t="inlineStr" s="'+(i===0?1:0)+'"><is><t xml:space="preserve">'+xlsxXml(value)+'</t></is></c>').join('')+'</row>').join('');
+ return zipStored({
+  '[Content_Types].xml':'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
+  '_rels/.rels':'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+rel+'/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+  'xl/workbook.xml':'<workbook xmlns="'+ns+'" xmlns:r="'+rel+'"><sheets><sheet name="Timesheet" sheetId="1" r:id="rId1"/></sheets></workbook>',
+  'xl/_rels/workbook.xml.rels':'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+rel+'/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="'+rel+'/styles" Target="styles.xml"/></Relationships>',
+  'xl/styles.xml':'<styleSheet xmlns="'+ns+'"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/><color rgb="FFFFFFFF"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF344C3C"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
+  'xl/worksheets/sheet1.xml':'<worksheet xmlns="'+ns+'"><dimension ref="A1:G'+rows.length+'"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="1" width="15" customWidth="1"/><col min="2" max="4" width="13" customWidth="1"/><col min="5" max="5" width="65" customWidth="1"/><col min="6" max="6" width="28" customWidth="1"/><col min="7" max="7" width="24" customWidth="1"/></cols><sheetData>'+sheetRows+'</sheetData><autoFilter ref="A1:G'+rows.length+'"/></worksheet>'
+ });
+}
+function exportHistory(){
+ if(historyState.loading||!historyState.loaded||historyState.stale||historyState.error)return;
+ const rows=historyRows();if(!rows.length)return;
+ try{const blob=makeHistoryWorkbook(rows),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Timesheet_'+todayKey()+'_'+rows.length+'-records.xlsx';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);toast('File Excel berisi '+rows.length+' catatan siap diunduh.','success');}
+ catch(error){toast('Ekspor Excel gagal. Silakan coba kembali.','error');}
+}
+$('historyExport').onclick=exportHistory;
+for(const id of ['historyFrom','historyTo','historyStatus'])$(id).onchange=()=>{historyState.page=1;renderHistory();};
+$('historyReset').onclick=()=>{for(const id of ['historyFrom','historyTo','historySearch'])$(id).value='';$('historyStatus').value='all';historyState.page=1;renderHistory();};
+
 /* 15. INITIALIZATION */
 $('employeeName').textContent=CONFIG.employeeName;$('initial').textContent=CONFIG.employeeName.charAt(0).toUpperCase();$('zoneLabel').textContent=CONFIG.timezoneLabel;$('tasks').maxLength=CONFIG.maxTaskLength;$('taskCounter').textContent='0 / '+CONFIG.maxTaskLength;
 CONFIG.taskChips.forEach(label=>{const button=document.createElement('button');button.type='button';button.className='chip';button.textContent='+ '+label;button.onclick=()=>{const field=$('tasks');const added=(field.value?'\n':'')+'• '+label;if(field.value.length+added.length>CONFIG.maxTaskLength){toast('Task character limit reached.','warning');return;}field.value+=added;updateTasks();field.focus();};$('taskChips').append(button);});
