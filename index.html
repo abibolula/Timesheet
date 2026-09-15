@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kartu Waktu — Absensi Digital</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,16 +20,17 @@
     --ink-muted:#6B5A44;
     --stamp-red:#963A2A;
     --ledger-green:#3F5C42;
-    --item-h:46px;
+    --item-h:38px;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;height:100%;}
   body{
-    min-height:100vh;
+    height:100dvh;
+    overflow:hidden;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:28px 16px;
+    padding:10px;
     font-family:'Courier Prime', 'Courier New', monospace;
     color:var(--ink);
     background-color:var(--wood-dark);
@@ -38,24 +39,26 @@
       repeating-linear-gradient(112deg, #2b1e10 0px, #2b1e10 2px, #241909 2px, #241909 5px);
   }
 
-  .app{ width:100%; max-width:460px; }
+  .app{ width:100%; max-width:420px; height:100%; display:flex; flex-direction:column; }
 
   .card{
     position:relative;
+    width:100%; height:100%;
+    display:flex; flex-direction:column;
     background-color:var(--paper);
     background-image: radial-gradient(rgba(0,0,0,0.045) 1px, transparent 1.2px);
     background-size: 3px 3px;
     border-radius:3px;
     box-shadow:
       0 0 0 1px var(--brass-dk),
-      0 0 0 6px var(--wood),
-      0 18px 40px rgba(0,0,0,0.45);
+      0 0 0 5px var(--wood),
+      0 14px 30px rgba(0,0,0,0.45);
     overflow:hidden;
   }
 
   .plate{
-    position:relative;
-    padding:22px 20px 18px;
+    position:relative; flex:0 0 auto;
+    padding:10px 18px 8px;
     text-align:center;
     background:linear-gradient(160deg, var(--brass-hi), var(--brass) 55%, var(--brass-dk) 100%);
     border-bottom:3px solid var(--wood);
@@ -64,62 +67,61 @@
     margin:0;
     font-family:'Bitter', serif;
     font-weight:900;
-    font-size:1.5rem;
-    letter-spacing:0.14em;
+    font-size:1.18rem;
+    letter-spacing:0.12em;
     color:var(--ink);
     text-shadow:0 1px 0 rgba(255,255,255,0.35), 0 -1px 0 rgba(0,0,0,0.25);
   }
   .plate p{
-    margin:6px 0 0;
-    font-size:0.72rem;
-    letter-spacing:0.08em;
+    margin:3px 0 0;
+    font-size:0.62rem;
+    letter-spacing:0.07em;
     color:var(--ink);
     opacity:0.75;
   }
   .rivet{
-    position:absolute; width:8px; height:8px; border-radius:50%;
+    position:absolute; width:7px; height:7px; border-radius:50%;
     background:radial-gradient(circle at 32% 30%, #F5E4B8, #6E5528 72%, #45350F);
     box-shadow:0 1px 1px rgba(0,0,0,0.6);
   }
-  .rivet.tl{top:9px; left:10px;} .rivet.tr{top:9px; right:10px;}
-  .rivet.bl{bottom:9px; left:10px;} .rivet.br{bottom:9px; right:10px;}
+  .rivet.tl{top:7px; left:9px;} .rivet.tr{top:7px; right:9px;}
+  .rivet.bl{bottom:7px; left:9px;} .rivet.br{bottom:7px; right:9px;}
 
   .gear-btn{
-    position:absolute; top:10px; right:14px;
-    width:26px; height:26px; border-radius:50%;
+    position:absolute; bottom:7px; right:8px;
+    width:15px; height:15px; border-radius:50%;
     border:1px solid var(--wood);
     background:radial-gradient(circle at 32% 30%, #F5E4B8, var(--brass-dk) 80%);
-    color:var(--ink); font-size:0.85rem; cursor:pointer;
-    display:none;
+    color:var(--ink); font-size:0.68rem; line-height:1; cursor:pointer; padding:0;
   }
-  .plate .gear-btn{ display:block; top:auto; bottom:9px; right:9px; width:16px; height:16px; }
 
   .status-bar{
-    padding:14px 20px;
+    flex:0 0 auto;
+    padding:8px 16px;
     border-bottom:1px dashed var(--brass-dk);
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
   }
   .status-bar .date-label{
-    font-size:0.78rem; color:var(--ink-muted); letter-spacing:0.02em;
+    font-size:0.68rem; color:var(--ink-muted); letter-spacing:0.01em;
   }
   .status-pill{
-    display:inline-flex; align-items:center; gap:6px;
-    font-size:0.72rem; font-weight:700; letter-spacing:0.04em;
-    padding:5px 10px; border-radius:2px;
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:0.65rem; font-weight:700; letter-spacing:0.03em;
+    padding:4px 9px; border-radius:2px;
     border:1px solid var(--brass-dk);
     background:var(--paper-dark);
     white-space:nowrap;
   }
-  .status-pill .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-muted);}
+  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--ink-muted);}
   .status-pill.in .dot{background:var(--stamp-red);}
   .status-pill.done .dot{background:var(--ledger-green);}
   .status-pill.done{color:var(--ledger-green); border-color:var(--ledger-green);}
   .status-pill.in{color:var(--stamp-red); border-color:var(--stamp-red);}
 
-  .tabs{ display:flex; }
+  .tabs{ flex:0 0 auto; display:flex; }
   .tab{
-    flex:1; padding:13px 8px; text-align:center;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.82rem; letter-spacing:0.08em;
+    flex:1; padding:10px 8px; text-align:center;
+    font-family:'Bitter', serif; font-weight:700; font-size:0.76rem; letter-spacing:0.07em;
     cursor:pointer; user-select:none;
     background:var(--paper-dark);
     color:var(--ink-muted);
@@ -133,17 +135,22 @@
   }
   .tab:first-child{ border-right:1px dashed var(--brass-dk); }
 
-  .panel{ padding:22px 22px 26px; }
+  .panel{
+    flex:1 1 auto; min-height:0; overflow-y:auto;
+    display:flex; flex-direction:column;
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+  }
   .panel-hidden{ display:none; }
 
-  .field{ margin-bottom:20px; }
+  .field{ margin-bottom:12px; }
+  .field:last-of-type{ margin-bottom:0; }
   .field label{
-    display:block; font-size:0.72rem; color:var(--ink-muted);
-    letter-spacing:0.06em; margin-bottom:7px;
+    display:block; font-size:0.66rem; color:var(--ink-muted);
+    letter-spacing:0.05em; margin-bottom:5px;
   }
   input[type="date"], input[type="text"], textarea{
-    width:100%; padding:10px 12px;
-    font-family:'Courier Prime', monospace; font-size:0.92rem; color:var(--ink);
+    width:100%; padding:8px 10px;
+    font-family:'Courier Prime', monospace; font-size:0.86rem; color:var(--ink);
     background:var(--paper-dark);
     border:1px solid var(--brass-dk);
     border-radius:2px;
@@ -152,27 +159,26 @@
   input[type="date"]:focus, input[type="text"]:focus, textarea:focus{
     border-color:var(--stamp-red);
   }
-  textarea{ min-height:80px; resize:vertical; line-height:1.5; }
+  textarea{ min-height:52px; resize:vertical; line-height:1.4; flex:1; }
 
-  .today-readout{
-    padding:12px 14px; background:var(--paper-dark);
-    border:1px solid var(--brass-dk); border-radius:2px;
-    font-size:0.9rem; color:var(--ink);
+  .hint-line{
+    font-size:0.65rem; color:var(--ink-muted); margin-top:5px; line-height:1.4;
   }
-  .today-readout span{ display:block; font-size:0.68rem; color:var(--ink-muted); margin-bottom:3px; letter-spacing:0.06em;}
+  .hint-line.warn{ color:var(--stamp-red); }
+  .hint-line.ok{ color:var(--ledger-green); }
 
   /* --- Wheel time picker (split-flap style) --- */
   .time-picker{
-    display:flex; align-items:center; justify-content:center; gap:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .wheel-col{ position:relative; width:78px; }
+  .wheel-col{ position:relative; width:66px; }
   .wheel-btn{
-    width:100%; padding:5px 0; text-align:center;
+    width:100%; padding:3px 0; text-align:center;
     background:var(--paper-dark); border:1px solid var(--brass-dk); border-radius:2px;
-    color:var(--brass-dk); cursor:pointer; font-size:0.7rem; line-height:1;
+    color:var(--brass-dk); cursor:pointer; font-size:0.62rem; line-height:1;
   }
-  .wheel-btn.up{ margin-bottom:4px; }
-  .wheel-btn.down{ margin-top:4px; }
+  .wheel-btn.up{ margin-bottom:3px; }
+  .wheel-btn.down{ margin-top:3px; }
   .wheel-btn:active{ background:var(--brass-dk); color:var(--paper); }
 
   .wheel{
@@ -191,10 +197,10 @@
   .wheel-item{
     height:var(--item-h);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Courier Prime', monospace; font-weight:700; font-size:1.55rem;
+    font-family:'Courier Prime', monospace; font-weight:700; font-size:1.3rem;
     color:var(--paper-dark); opacity:0.28;
     scroll-snap-align:center;
-    transition:opacity .12s, transform .12s;
+    transition:opacity .1s, transform .1s;
   }
   .wheel-item.active{ opacity:1; color:var(--brass-hi); transform:scale(1.06); }
   .wheel-window{
@@ -204,19 +210,21 @@
     pointer-events:none;
   }
   .wheel-sep{
-    font-family:'Bitter', serif; font-weight:900; font-size:1.6rem; color:var(--ink);
-    align-self:center; padding-top: 4px;
+    font-family:'Bitter', serif; font-weight:900; font-size:1.3rem; color:var(--ink);
+    align-self:center;
   }
 
+  .spacer{ flex:1; }
+
   .btn-submit{
-    width:100%; margin-top:6px; padding:14px;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.92rem; letter-spacing:0.1em;
+    width:100%; margin-top:10px; padding:11px;
+    font-family:'Bitter', serif; font-weight:700; font-size:0.84rem; letter-spacing:0.09em;
     color:var(--paper);
     background:linear-gradient(180deg, #4a3220, var(--wood-dark));
     border:1px solid var(--wood-dark);
     border-radius:2px;
     cursor:pointer;
-    position:relative;
+    flex:0 0 auto;
     transition:transform .08s;
   }
   .btn-submit:active{ transform:scale(0.98); }
@@ -228,17 +236,15 @@
     pointer-events:none; z-index:50;
   }
   .stamp-flash span{
-    font-family:'Bitter', serif; font-weight:900; font-size:1.4rem; letter-spacing:0.08em;
+    font-family:'Bitter', serif; font-weight:900; font-size:1.25rem; letter-spacing:0.07em;
     color:var(--stamp-red);
     border:4px solid var(--stamp-red);
-    padding:14px 26px; border-radius:4px;
+    padding:12px 22px; border-radius:4px;
     transform:rotate(-6deg) scale(1.4);
     opacity:0;
     background:rgba(239,229,203,0.94);
   }
-  .stamp-flash.show span{
-    animation:stampIn .55s ease-out forwards;
-  }
+  .stamp-flash.show span{ animation:stampIn .5s ease-out forwards; }
   @keyframes stampIn{
     0%{ opacity:0; transform:rotate(-6deg) scale(1.8); }
     45%{ opacity:1; transform:rotate(-6deg) scale(0.96); }
@@ -247,21 +253,12 @@
   }
 
   .msg{
-    margin-top:14px; padding:10px 12px; border-radius:2px;
-    font-size:0.8rem; line-height:1.4; display:none;
+    margin-top:8px; padding:7px 9px; border-radius:2px;
+    font-size:0.72rem; line-height:1.35; display:none; flex:0 0 auto;
   }
   .msg.show{ display:block; }
   .msg.error{ background:#F3DCD5; border:1px solid var(--stamp-red); color:var(--stamp-red); }
   .msg.ok{ background:#DCE6DD; border:1px solid var(--ledger-green); color:var(--ledger-green); }
-
-  .footer-note{
-    text-align:center; margin-top:14px; font-size:0.68rem; color:var(--paper-dark); opacity:0.7;
-    letter-spacing:0.04em;
-  }
-  .footer-note button{
-    background:none; border:none; color:var(--brass-hi); text-decoration:underline;
-    font-family:inherit; font-size:inherit; cursor:pointer; padding:0;
-  }
 
   /* Modal */
   .modal-overlay{
@@ -270,20 +267,21 @@
   }
   .modal-overlay.show{ display:flex; }
   .modal{
-    width:100%; max-width:380px; background:var(--paper);
+    width:100%; max-width:360px; background:var(--paper);
     border:1px solid var(--brass-dk); border-radius:3px;
     box-shadow:0 0 0 6px var(--wood);
-    padding:20px;
+    padding:18px;
+    max-height:90vh; overflow-y:auto;
   }
   .modal h2{
-    margin:0 0 4px; font-family:'Bitter', serif; font-size:1.05rem; letter-spacing:0.04em;
+    margin:0 0 4px; font-family:'Bitter', serif; font-size:1rem; letter-spacing:0.04em;
   }
-  .modal p.hint{ margin:0 0 16px; font-size:0.74rem; color:var(--ink-muted); line-height:1.5; }
-  .modal .field{ margin-bottom:14px; }
-  .modal-actions{ display:flex; gap:10px; margin-top:6px; }
+  .modal p.hint{ margin:0 0 14px; font-size:0.72rem; color:var(--ink-muted); line-height:1.5; }
+  .modal .field{ margin-bottom:12px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:4px; }
   .modal-actions button{
-    flex:1; padding:11px; border-radius:2px; cursor:pointer;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.82rem; letter-spacing:0.05em;
+    flex:1; padding:10px; border-radius:2px; cursor:pointer;
+    font-family:'Bitter', serif; font-weight:700; font-size:0.8rem; letter-spacing:0.04em;
   }
   .btn-save{ background:var(--wood-dark); color:var(--paper); border:1px solid var(--wood-dark); }
   .btn-cancel{ background:var(--paper-dark); color:var(--ink); border:1px solid var(--brass-dk); }
@@ -316,6 +314,7 @@
       <div class="field">
         <label for="inDate">Tanggal</label>
         <input type="date" id="inDate">
+        <div class="hint-line" id="inHint"></div>
       </div>
 
       <div class="field">
@@ -340,6 +339,7 @@
         <input type="text" id="inNama" placeholder="mis. Rasyid">
       </div>
 
+      <div class="spacer"></div>
       <button class="btn-submit" id="btnClockIn">STEMPEL MASUK</button>
       <div class="msg" id="inMsg"></div>
     </div>
@@ -347,8 +347,9 @@
     <!-- CLOCK OUT -->
     <div class="panel panel-hidden" id="panelOut">
       <div class="field">
-        <label>Tanggal (otomatis hari ini)</label>
-        <div class="today-readout"><span>Data yang akan diperbarui</span><span id="outDateReadout">—</span></div>
+        <label for="outDate">Tanggal</label>
+        <input type="date" id="outDate">
+        <div class="hint-line" id="outHint"></div>
       </div>
 
       <div class="field">
@@ -368,7 +369,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field" style="flex:1; display:flex; flex-direction:column;">
         <label for="outTask">Tugas yang sudah dikerjakan</label>
         <textarea id="outTask" placeholder="Tulis ringkasan pekerjaan hari ini…"></textarea>
       </div>
@@ -376,10 +377,6 @@
       <button class="btn-submit out" id="btnClockOut">STEMPEL KELUAR</button>
       <div class="msg" id="outMsg"></div>
     </div>
-  </div>
-
-  <div class="footer-note">
-    Terhubung ke Google Sheet &middot; <button id="btnSettingsFooter">pengaturan</button>
   </div>
 </div>
 
@@ -406,7 +403,7 @@
 
 <script>
 (function(){
-  const ITEM_H = 46;
+  const ITEM_H = 38;
   const pad2 = n => String(n).padStart(2,'0');
   const todayStr = () => {
     const d = new Date();
@@ -415,6 +412,10 @@
   const fmtLong = (dateStr) => {
     const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  };
+  const fmtShort = (dateStr) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
   };
 
   let settings = JSON.parse(localStorage.getItem('kartuWaktuSettings') || '{}');
@@ -452,8 +453,8 @@
       const idx = Math.max(0, Math.min(count-1, Math.round(el.scrollTop / ITEM_H)));
       paintActive(idx);
       clearTimeout(t);
-      t = setTimeout(settle, 130);
-    });
+      t = setTimeout(settle, 90);
+    }, { passive:true });
     el.addEventListener('click', (e) => {
       const it = e.target.closest('.wheel-item');
       if(!it) return;
@@ -511,13 +512,17 @@
       const isIn = tab.dataset.tab === 'in';
       panelIn.classList.toggle('panel-hidden', !isIn);
       panelOut.classList.toggle('panel-hidden', isIn);
+      if(isIn) reflectDate('in', document.getElementById('inDate').value);
+      else reflectDate('out', document.getElementById('outDate').value);
     });
   });
 
   // ---------- Defaults ----------
-  document.getElementById('inDate').value = todayStr();
+  const inDateEl = document.getElementById('inDate');
+  const outDateEl = document.getElementById('outDate');
+  inDateEl.value = todayStr();
+  outDateEl.value = todayStr();
   document.getElementById('inNama').value = settings.nama || '';
-  document.getElementById('outDateReadout').textContent = fmtLong(todayStr());
   document.getElementById('statusDate').textContent = fmtLong(todayStr());
 
   // ---------- API calls ----------
@@ -548,6 +553,48 @@
     setTimeout(() => el.classList.remove('show'), 1200);
   }
 
+  // Debounced per-date lookup so switching tabs / changing dates is instant & doesn't spam requests
+  let reflectTimers = {};
+  function reflectDate(mode, date){
+    clearTimeout(reflectTimers[mode]);
+    const hintEl = document.getElementById(mode === 'in' ? 'inHint' : 'outHint');
+    if(!settings.scriptUrl){ hintEl.textContent=''; return; }
+    hintEl.textContent = 'Memeriksa data…';
+    hintEl.className = 'hint-line';
+    reflectTimers[mode] = setTimeout(async () => {
+      try{
+        const r = await apiCheck(date);
+        if(mode === 'in'){
+          if(r.success && r.entry){
+            hintEl.textContent = `Sudah tercatat masuk pukul ${r.entry.jamMasuk} untuk ${fmtShort(date)}.`;
+            hintEl.className = 'hint-line warn';
+          } else {
+            hintEl.textContent = `Belum ada catatan untuk ${fmtShort(date)}.`;
+            hintEl.className = 'hint-line';
+          }
+        } else {
+          if(r.success && r.entry){
+            const [h,m] = (r.entry.jamMasuk || '00:00').split(':').map(Number);
+            hintEl.textContent = r.entry.jamKeluar
+              ? `Sudah clock out pukul ${r.entry.jamKeluar}. Simpan lagi untuk memperbarui.`
+              : `Masuk pukul ${r.entry.jamMasuk} — siap untuk clock out.`;
+            hintEl.className = r.entry.jamKeluar ? 'hint-line warn' : 'hint-line ok';
+            if(r.entry.tugas) document.getElementById('outTask').value = r.entry.tugas;
+          } else {
+            hintEl.textContent = `Belum ada clock in untuk ${fmtShort(date)}. Clock out belum bisa disimpan.`;
+            hintEl.className = 'hint-line warn';
+          }
+        }
+      } catch(err){
+        hintEl.textContent = 'Gagal memeriksa data.';
+        hintEl.className = 'hint-line warn';
+      }
+    }, 250);
+  }
+
+  inDateEl.addEventListener('change', () => reflectDate('in', inDateEl.value));
+  outDateEl.addEventListener('change', () => reflectDate('out', outDateEl.value));
+
   async function refreshStatus(){
     const pill = document.getElementById('statusPill');
     const text = document.getElementById('statusText');
@@ -577,16 +624,19 @@
   }
 
   // ---------- Submit: Clock In ----------
+  let submittingIn = false;
   document.getElementById('btnClockIn').addEventListener('click', async () => {
+    if(submittingIn) return;
     const btn = document.getElementById('btnClockIn');
     const msg = document.getElementById('inMsg');
     clearMsg(msg);
     if(!settings.scriptUrl){ openModal(); return; }
-    const date = document.getElementById('inDate').value;
+    const date = inDateEl.value;
     const time = `${pad2(wheels.inHour.getValue())}:${pad2(wheels.inMinute.getValue())}`;
     const nama = document.getElementById('inNama').value.trim();
     settings.nama = nama; localStorage.setItem('kartuWaktuSettings', JSON.stringify(settings));
 
+    submittingIn = true;
     btn.disabled = true; btn.textContent = 'MENYIMPAN…';
     try{
       const r = await apiPost({ action:'clockIn', date, time, nama });
@@ -594,39 +644,46 @@
         stampFlash('MASUK TERCATAT');
         setMsg(msg, `Clock in tersimpan untuk ${fmtLong(date)} pukul ${time}.`, 'ok');
         refreshStatus();
+        reflectDate('in', date);
       } else {
         setMsg(msg, r.message || 'Gagal menyimpan data.', 'error');
       }
     } catch(err){
       setMsg(msg, 'Tidak dapat terhubung ke Google Sheet. Periksa URL Apps Script di pengaturan.', 'error');
     } finally {
+      submittingIn = false;
       btn.disabled = false; btn.textContent = 'STEMPEL MASUK';
     }
   });
 
   // ---------- Submit: Clock Out ----------
+  let submittingOut = false;
   document.getElementById('btnClockOut').addEventListener('click', async () => {
+    if(submittingOut) return;
     const btn = document.getElementById('btnClockOut');
     const msg = document.getElementById('outMsg');
     clearMsg(msg);
     if(!settings.scriptUrl){ openModal(); return; }
-    const date = todayStr();
+    const date = outDateEl.value;
     const time = `${pad2(wheels.outHour.getValue())}:${pad2(wheels.outMinute.getValue())}`;
     const tugas = document.getElementById('outTask').value.trim();
 
+    submittingOut = true;
     btn.disabled = true; btn.textContent = 'MENYIMPAN…';
     try{
       const r = await apiPost({ action:'clockOut', date, time, tugas });
       if(r.success){
         stampFlash('KELUAR TERCATAT');
-        setMsg(msg, `Clock out tersimpan untuk hari ini pukul ${time}.`, 'ok');
+        setMsg(msg, `Clock out tersimpan untuk ${fmtLong(date)} pukul ${time}.`, 'ok');
         refreshStatus();
+        reflectDate('out', date);
       } else {
-        setMsg(msg, r.message || 'Gagal menyimpan data. Pastikan sudah clock in hari ini.', 'error');
+        setMsg(msg, r.message || 'Gagal menyimpan data. Pastikan sudah clock in tanggal tersebut.', 'error');
       }
     } catch(err){
       setMsg(msg, 'Tidak dapat terhubung ke Google Sheet. Periksa URL Apps Script di pengaturan.', 'error');
     } finally {
+      submittingOut = false;
       btn.disabled = false; btn.textContent = 'STEMPEL KELUAR';
     }
   });
@@ -640,7 +697,6 @@
   }
   function closeModal(){ overlay.classList.remove('show'); }
   document.getElementById('btnSettings').addEventListener('click', openModal);
-  document.getElementById('btnSettingsFooter').addEventListener('click', openModal);
   document.getElementById('btnModalCancel').addEventListener('click', closeModal);
   document.getElementById('btnModalSave').addEventListener('click', () => {
     const url = document.getElementById('cfgUrl').value.trim();
@@ -650,10 +706,12 @@
     document.getElementById('inNama').value = nama;
     closeModal();
     refreshStatus();
+    reflectDate('in', inDateEl.value);
   });
 
   if(!settings.scriptUrl){ openModal(); }
   refreshStatus();
+  reflectDate('in', inDateEl.value);
 })();
 </script>
 </body>
