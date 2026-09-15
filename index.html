@@ -1,724 +1,199 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Kartu Waktu — Absensi Digital</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4efe6"><title>Daily Timekeeper · Employee Timesheet</title>
 <style>
-  :root{
-    --paper:#EFE5CB;
-    --paper-dark:#E1D1A8;
-    --wood-dark:#221809;
-    --wood:#2E2013;
-    --brass-hi:#E7C983;
-    --brass:#B9924F;
-    --brass-dk:#7C5F30;
-    --ink:#2A1F16;
-    --ink-muted:#6B5A44;
-    --stamp-red:#963A2A;
-    --ledger-green:#3F5C42;
-    --item-h:38px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
-  body{
-    height:100dvh;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:10px;
-    font-family:'Courier Prime', 'Courier New', monospace;
-    color:var(--ink);
-    background-color:var(--wood-dark);
-    background-image:
-      radial-gradient(ellipse at 50% 20%, rgba(255,220,160,0.05), transparent 60%),
-      repeating-linear-gradient(112deg, #2b1e10 0px, #2b1e10 2px, #241909 2px, #241909 5px);
-  }
-
-  .app{ width:100%; max-width:420px; height:100%; display:flex; flex-direction:column; }
-
-  .card{
-    position:relative;
-    width:100%; height:100%;
-    display:flex; flex-direction:column;
-    background-color:var(--paper);
-    background-image: radial-gradient(rgba(0,0,0,0.045) 1px, transparent 1.2px);
-    background-size: 3px 3px;
-    border-radius:3px;
-    box-shadow:
-      0 0 0 1px var(--brass-dk),
-      0 0 0 5px var(--wood),
-      0 14px 30px rgba(0,0,0,0.45);
-    overflow:hidden;
-  }
-
-  .plate{
-    position:relative; flex:0 0 auto;
-    padding:10px 18px 8px;
-    text-align:center;
-    background:linear-gradient(160deg, var(--brass-hi), var(--brass) 55%, var(--brass-dk) 100%);
-    border-bottom:3px solid var(--wood);
-  }
-  .plate h1{
-    margin:0;
-    font-family:'Bitter', serif;
-    font-weight:900;
-    font-size:1.18rem;
-    letter-spacing:0.12em;
-    color:var(--ink);
-    text-shadow:0 1px 0 rgba(255,255,255,0.35), 0 -1px 0 rgba(0,0,0,0.25);
-  }
-  .plate p{
-    margin:3px 0 0;
-    font-size:0.62rem;
-    letter-spacing:0.07em;
-    color:var(--ink);
-    opacity:0.75;
-  }
-  .rivet{
-    position:absolute; width:7px; height:7px; border-radius:50%;
-    background:radial-gradient(circle at 32% 30%, #F5E4B8, #6E5528 72%, #45350F);
-    box-shadow:0 1px 1px rgba(0,0,0,0.6);
-  }
-  .rivet.tl{top:7px; left:9px;} .rivet.tr{top:7px; right:9px;}
-  .rivet.bl{bottom:7px; left:9px;} .rivet.br{bottom:7px; right:9px;}
-
-  .gear-btn{
-    position:absolute; bottom:7px; right:8px;
-    width:15px; height:15px; border-radius:50%;
-    border:1px solid var(--wood);
-    background:radial-gradient(circle at 32% 30%, #F5E4B8, var(--brass-dk) 80%);
-    color:var(--ink); font-size:0.68rem; line-height:1; cursor:pointer; padding:0;
-  }
-
-  .status-bar{
-    flex:0 0 auto;
-    padding:8px 16px;
-    border-bottom:1px dashed var(--brass-dk);
-    display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
-    flex-wrap:wrap;
-  }
-  .status-bar .date-label{
-    font-size:0.68rem; color:var(--ink-muted); letter-spacing:0.01em;
-    flex:1 1 auto; min-width:64px; padding-top:2px;
-  }
-  .status-pill{
-    display:inline-flex; align-items:flex-start; gap:5px;
-    font-size:0.65rem; font-weight:700; letter-spacing:0.03em;
-    padding:4px 9px; border-radius:2px;
-    border:1px solid var(--brass-dk);
-    background:var(--paper-dark);
-    flex:0 1 auto; min-width:0; max-width:100%;
-  }
-  .status-pill .dot{ flex:0 0 auto; margin-top:3px; }
-  .status-pill span:last-child{
-    white-space:normal; word-break:break-word; min-width:0;
-  }
-  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--ink-muted);}
-  .status-pill.in .dot{background:var(--stamp-red);}
-  .status-pill.done .dot{background:var(--ledger-green);}
-  .status-pill.done{color:var(--ledger-green); border-color:var(--ledger-green);}
-  .status-pill.in{color:var(--stamp-red); border-color:var(--stamp-red);}
-
-  .tabs{ flex:0 0 auto; display:flex; }
-  .tab{
-    flex:1; padding:10px 8px; text-align:center;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.76rem; letter-spacing:0.07em;
-    cursor:pointer; user-select:none;
-    background:var(--paper-dark);
-    color:var(--ink-muted);
-    border-bottom:3px solid var(--brass-dk);
-    transition:background .15s, color .15s;
-  }
-  .tab.active{
-    background:var(--paper);
-    color:var(--ink);
-    border-bottom:3px solid var(--stamp-red);
-  }
-  .tab:first-child{ border-right:1px dashed var(--brass-dk); }
-
-  .panel{
-    flex:1 1 auto; min-height:0; overflow-y:auto;
-    display:flex; flex-direction:column;
-    padding:14px 18px calc(14px + env(safe-area-inset-bottom));
-  }
-  .panel-hidden{ display:none; }
-
-  .field{ margin-bottom:12px; }
-  .field:last-of-type{ margin-bottom:0; }
-  .field label{
-    display:block; font-size:0.66rem; color:var(--ink-muted);
-    letter-spacing:0.05em; margin-bottom:5px;
-  }
-  input[type="date"], input[type="text"], textarea{
-    width:100%; padding:8px 10px;
-    font-family:'Courier Prime', monospace; font-size:0.86rem; color:var(--ink);
-    background:var(--paper-dark);
-    border:1px solid var(--brass-dk);
-    border-radius:2px;
-    outline:none;
-  }
-  input[type="date"]:focus, input[type="text"]:focus, textarea:focus{
-    border-color:var(--stamp-red);
-  }
-  textarea{ min-height:52px; resize:vertical; line-height:1.4; flex:1; }
-
-  .hint-line{
-    font-size:0.65rem; color:var(--ink-muted); margin-top:5px; line-height:1.4;
-  }
-  .hint-line.warn{ color:var(--stamp-red); }
-  .hint-line.ok{ color:var(--ledger-green); }
-
-  /* --- Wheel time picker (split-flap style) --- */
-  .time-picker{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-  }
-  .wheel-col{ position:relative; width:66px; }
-  .wheel-btn{
-    width:100%; padding:3px 0; text-align:center;
-    background:var(--paper-dark); border:1px solid var(--brass-dk); border-radius:2px;
-    color:var(--brass-dk); cursor:pointer; font-size:0.62rem; line-height:1;
-  }
-  .wheel-btn.up{ margin-bottom:3px; }
-  .wheel-btn.down{ margin-top:3px; }
-  .wheel-btn:active{ background:var(--brass-dk); color:var(--paper); }
-
-  .wheel{
-    height:calc(var(--item-h) * 3);
-    overflow-y:scroll;
-    scroll-snap-type:y mandatory;
-    padding:var(--item-h) 0;
-    background:var(--wood-dark);
-    border:2px solid var(--wood);
-    border-radius:2px;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    position:relative;
-  }
-  .wheel::-webkit-scrollbar{ display:none; }
-  .wheel-item{
-    height:var(--item-h);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Courier Prime', monospace; font-weight:700; font-size:1.3rem;
-    color:var(--paper-dark); opacity:0.28;
-    scroll-snap-align:center;
-    transition:opacity .1s, transform .1s;
-  }
-  .wheel-item.active{ opacity:1; color:var(--brass-hi); transform:scale(1.06); }
-  .wheel-window{
-    position:absolute; left:2px; right:2px; top:50%;
-    height:var(--item-h); transform:translateY(-50%);
-    border-top:1px solid var(--brass); border-bottom:1px solid var(--brass);
-    pointer-events:none;
-  }
-  .wheel-sep{
-    font-family:'Bitter', serif; font-weight:900; font-size:1.3rem; color:var(--ink);
-    align-self:center;
-  }
-
-  .spacer{ flex:1; }
-
-  .btn-submit{
-    width:100%; margin-top:10px; padding:11px;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.84rem; letter-spacing:0.09em;
-    color:var(--paper);
-    background:linear-gradient(180deg, #4a3220, var(--wood-dark));
-    border:1px solid var(--wood-dark);
-    border-radius:2px;
-    cursor:pointer;
-    flex:0 0 auto;
-    transition:transform .08s;
-  }
-  .btn-submit:active{ transform:scale(0.98); }
-  .btn-submit.out{ background:linear-gradient(180deg, #5a2c22, var(--wood-dark)); }
-  .btn-submit[disabled]{ opacity:0.55; cursor:progress; }
-
-  .stamp-flash{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    pointer-events:none; z-index:50;
-  }
-  .stamp-flash span{
-    font-family:'Bitter', serif; font-weight:900; font-size:1.25rem; letter-spacing:0.07em;
-    color:var(--stamp-red);
-    border:4px solid var(--stamp-red);
-    padding:12px 22px; border-radius:4px;
-    transform:rotate(-6deg) scale(1.4);
-    opacity:0;
-    background:rgba(239,229,203,0.94);
-  }
-  .stamp-flash.show span{ animation:stampIn .5s ease-out forwards; }
-  @keyframes stampIn{
-    0%{ opacity:0; transform:rotate(-6deg) scale(1.8); }
-    45%{ opacity:1; transform:rotate(-6deg) scale(0.96); }
-    75%{ transform:rotate(-6deg) scale(1.04); }
-    100%{ opacity:1; transform:rotate(-6deg) scale(1); }
-  }
-
-  .msg{
-    margin-top:8px; padding:7px 9px; border-radius:2px;
-    font-size:0.72rem; line-height:1.35; display:none; flex:0 0 auto;
-  }
-  .msg.show{ display:block; }
-  .msg.error{ background:#F3DCD5; border:1px solid var(--stamp-red); color:var(--stamp-red); }
-  .msg.ok{ background:#DCE6DD; border:1px solid var(--ledger-green); color:var(--ledger-green); }
-
-  /* Modal */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(15,10,5,0.72);
-    display:none; align-items:center; justify-content:center; padding:20px; z-index:100;
-  }
-  .modal-overlay.show{ display:flex; }
-  .modal{
-    width:100%; max-width:360px; background:var(--paper);
-    border:1px solid var(--brass-dk); border-radius:3px;
-    box-shadow:0 0 0 6px var(--wood);
-    padding:18px;
-    max-height:90vh; overflow-y:auto;
-  }
-  .modal h2{
-    margin:0 0 4px; font-family:'Bitter', serif; font-size:1rem; letter-spacing:0.04em;
-  }
-  .modal p.hint{ margin:0 0 14px; font-size:0.72rem; color:var(--ink-muted); line-height:1.5; }
-  .modal .field{ margin-bottom:12px; }
-  .modal-actions{ display:flex; gap:10px; margin-top:4px; }
-  .modal-actions button{
-    flex:1; padding:10px; border-radius:2px; cursor:pointer;
-    font-family:'Bitter', serif; font-weight:700; font-size:0.8rem; letter-spacing:0.04em;
-  }
-  .btn-save{ background:var(--wood-dark); color:var(--paper); border:1px solid var(--wood-dark); }
-  .btn-cancel{ background:var(--paper-dark); color:var(--ink); border:1px solid var(--brass-dk); }
+/* 01. ROOT & VARIABLES */
+:root{--paper:#f4efe6;--white:#fffcf7;--ink:#252923;--muted:#6d6b61;--line:#d9d2c5;--green:#344c3c;--brass:#9b7747;--mono:'Courier New',monospace;--serif:Georgia,'Times New Roman',serif;--shadow:0 20px 55px #43362112;--row:52px}
+/* 02. RESET */
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font:16px/1.5 'Segoe UI',Arial,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}button,a,input,textarea,[tabindex]{-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--brass);outline-offset:5px}button{color:inherit}svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}h1,h2,h3,p{margin:0}[hidden]{display:none!important}
+/* 03. BACKGROUND */
+body{background-color:var(--paper);background-image:radial-gradient(ellipse at 10% 0%,#fff9ed 0,transparent 60%),repeating-linear-gradient(0deg,#463a2503 0 1px,transparent 1px 4px)}body:before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#5b514515 .6px,transparent .7px);background-size:5px 5px;z-index:-1}
+/* 04. APP SHELL */
+.page{max-width:1152px;margin:auto;padding:30px 32px 20px}.masthead{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}.brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:650;letter-spacing:.02em}.brand-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--ink);border-radius:50%}.meta,.eyebrow{font:12px/1.5 var(--mono);letter-spacing:.13em;text-transform:uppercase}.meta{color:var(--muted)}.employee{display:flex;align-items:center;gap:9px;font-size:14px}.avatar{background:#e6dfd1;border:1px solid var(--line);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-family:var(--serif)}.shell{border:1px solid #cfc7b7;border-radius:14px;background:var(--white);box-shadow:var(--shadow);overflow:hidden;animation:rise .65s both}.workspace{display:grid;grid-template-columns:.87fr 1.13fr}.sidebar{padding:32px;background:#eee9de;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:28px}.form-side{padding:30px 38px 28px;min-width:0}.divider-label{display:flex;justify-content:space-between;align-items:center}.rule{height:1px;background:var(--line)}
+/* 05. HEADER */
+.header{display:flex;justify-content:space-between;align-items:center;padding:30px 36px;border-bottom:1px solid var(--line);gap:16px}.header .eyebrow{color:var(--brass);margin-bottom:7px}h1{font:42px/1.13 var(--serif);letter-spacing:-1.6px}.subtitle{color:var(--muted);font-size:14px;margin-top:10px}.calendar{width:88px;text-align:center;flex:none;border:1px solid #b9ad98;border-radius:5px;background:#faf6ed;box-shadow:3px 3px 0 #e8e1d4;transform:rotate(2deg);animation:rise .7s .1s both}.calendar .day{padding:3px;background:var(--green);color:#fffdf5;font:11px/1.8 var(--mono);letter-spacing:.14em}.calendar strong{display:block;font:29px/1.2 var(--serif);padding:5px 0 0}.calendar small{font:11px/1.8 var(--mono);letter-spacing:.08em}.clock-top{display:flex;align-items:center;justify-content:space-between}.live-clock{font:48px/1.2 var(--mono);letter-spacing:-2.5px;font-variant-numeric:tabular-nums;margin:9px 0 4px}.live-clock span{font-size:28px;color:#888276}.zone{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--brass)}.analog{width:37px;height:37px;border:1px solid #b5aa97;border-radius:50%;position:relative;background:repeating-conic-gradient(from 0deg,#a2988655 0deg 2deg,transparent 2deg 30deg);box-shadow:inset 0 0 0 4px #eee9de}.hand{position:absolute;width:1px;height:12px;background:var(--ink);left:50%;bottom:50%;transform-origin:bottom}.hand.hour{height:8px;width:2px}.hand.second{background:var(--brass);height:14px}
+/* 06. STATUS */
+.status-card{border:1px solid #d0c7b7;background:#f8f5ed;border-radius:8px;padding:21px}.status-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:19px}.tag{font:11px var(--mono);padding:4px 7px;border:1px solid #d7cfbf;border-radius:3px;color:var(--muted)}.status-title{font:25px/1.2 var(--serif);margin-bottom:7px}.status-copy{font-size:14px;color:var(--muted);min-height:42px}.session{margin-top:19px;padding-top:16px;border-top:1px dashed var(--line)}.session strong{display:block;font:29px/1.5 var(--mono);letter-spacing:1px}.timeline{display:flex;justify-content:space-between;position:relative;margin:23px 4px 0}.timeline:before{content:'';position:absolute;left:6px;right:6px;top:5px;height:1px;background:#c8bfae}.milestone{position:relative;font-size:12px;color:var(--muted)}.milestone:last-child{text-align:right}.pin{display:block;width:11px;height:11px;border:1px solid #aaa18f;border-radius:50%;background:#f8f5ed;margin-bottom:9px}.milestone:last-child .pin{margin-left:auto}.milestone.done .pin{background:var(--green);border-color:var(--green);box-shadow:0 0 0 3px #f8f5ed}.milestone b{font:14px var(--mono);display:block;margin-bottom:3px;color:var(--ink)}.status-action{border:0;padding:0;background:none;font-size:13px;margin-top:16px;text-decoration:underline;text-underline-offset:4px;color:var(--green)}.note{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:13px}.note svg{color:var(--brass);width:17px}.serial{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.bars{width:48px;height:17px;background:repeating-linear-gradient(90deg,#8f8574 0 1px,transparent 1px 3px,#8f8574 3px 5px,transparent 5px 8px);opacity:.6}
+/* 07. MODE SWITCH */
+.segmented{display:grid;grid-template-columns:1fr 1fr;position:relative;border:1px solid #d8d2c6;background:#efebe3;padding:4px;border-radius:7px;margin-bottom:23px}.segmented:before{content:'';position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--green);border-radius:4px;box-shadow:0 2px 3px #0002;transition:transform .3s,background .3s}.out .segmented:before{transform:translateX(100%);background:#5b4934}.segmented button{display:flex;justify-content:center;align-items:center;gap:9px;position:relative;border:0;background:none;padding:12px 6px;font-size:13px;font-weight:650;letter-spacing:.055em;color:var(--muted);transition:color .25s}.segmented button[aria-pressed=true]{color:#fffaf0}.form-heading{margin-bottom:20px}h2{font:25px var(--serif)}.form-heading p{font-size:13px;color:var(--muted);margin-top:5px}
+/* 08. DATE PICKER */
+.field-label{display:block;font:12px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}.date-row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:5px;padding:11px 13px;background:#fffefa}.date-row svg{color:var(--brass)}input[type=date]{border:0;background:transparent;color:var(--ink);width:100%;min-width:0;line-height:1.5;font-size:14px;color-scheme:light}.formatted-date{font-size:12px;color:var(--muted);margin:6px 0 20px}
+/* 09. TIME WHEEL */
+.time-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.time-label .field-label{margin:0}.text-button{display:inline-flex;align-items:center;gap:5px;font-size:12px;border:0;background:transparent;padding:4px 0;color:var(--green);text-decoration:underline;text-underline-offset:3px}.text-button svg{width:13px;height:13px}.instrument{position:relative;background:#292c26;border:1px solid #1d201b;border-radius:9px;padding:17px 25px 12px;box-shadow:inset 0 1px 0 #ffffff25,0 3px 0 #c9c2b5;color:#f4efe6;overflow:hidden}.screw{position:absolute;width:6px;height:6px;border:1px solid #6c6c5d;border-radius:50%;top:10px;left:10px;background:linear-gradient(45deg,transparent 40%,#888573 45% 55%,transparent 60%)}.screw.right{left:auto;right:10px}.wheel-labels{display:grid;grid-template-columns:1fr 24px 1fr;text-align:center;font:10px var(--mono);letter-spacing:.18em;color:#c3beaf}.wheels{height:156px;display:grid;grid-template-columns:1fr 24px 1fr;position:relative;margin-top:4px}.wheels:before{content:'';position:absolute;left:0;right:0;top:52px;height:52px;border-top:1px solid #d2c09755;border-bottom:1px solid #d2c09755;background:linear-gradient(90deg,#e5cf9a08,#e5cf9a14,#e5cf9a08);pointer-events:none}.wheel{height:156px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding:52px 0;position:relative;overscroll-behavior:contain;touch-action:pan-y;cursor:grab;mask-image:linear-gradient(transparent,#000 30% 70%,transparent);-webkit-mask-image:linear-gradient(transparent,#000 30% 70%,transparent)}.wheel::-webkit-scrollbar{display:none}.wheel.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}.wheel-item{height:52px;scroll-snap-align:center;text-align:center;display:flex;align-items:center;justify-content:center;font:36px/1 var(--mono);color:#a4a499;transition:color .15s,transform .15s;user-select:none}.wheel-item span{transition:transform .15s}.wheel-item.active{color:#fff7e3;text-shadow:0 2px 0 #0003}.wheel-item.active span{transform:scale(1.08)}.colon{display:grid;place-items:center;font:32px var(--serif);color:#bbaa84}.instrument-foot{border-top:1px solid #ffffff15;padding-top:10px;display:flex;justify-content:space-between;color:#b1b0a2;font:10px var(--mono);letter-spacing:.1em}.instrument-foot span:last-child{color:#d5bf8c}.wheel-help{text-align:center;color:var(--muted);font-size:12px;margin:10px 0 19px}
+/* 10. TASK INPUT */
+.task-reveal{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s,opacity .3s}.out .task-reveal{grid-template-rows:1fr;opacity:1}.task-inner{overflow:hidden;min-height:0}.task-label{display:block;font-size:14px;font-weight:600;margin:0 0 9px}textarea{display:block;resize:vertical;min-height:113px;max-height:280px;width:100%;border:1px solid var(--line);border-radius:5px;background:#fffefa;padding:12px;font-size:14px;line-height:1.6;color:var(--ink)}textarea::placeholder{color:#847f72}.counter{text-align:right;font:11px var(--mono);color:var(--muted);margin:6px 0 10px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}.chip{font-size:11px;background:transparent;border:1px solid var(--line);padding:5px 8px;border-radius:4px}.chip:hover{background:#eee8db}
+/* 11. BUTTONS */
+.primary{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;min-height:50px;border:1px solid #24392b;border-radius:5px;background:var(--green);color:#fffaf1;box-shadow:0 3px 0 #203427;font-size:13px;font-weight:600;letter-spacing:.09em;transition:transform .15s,background .2s}.out .primary{background:#5b4934;border-color:#493821;box-shadow:0 3px 0 #3e3020}.primary:hover{filter:brightness(1.1)}.primary:active{transform:translateY(3px);box-shadow:none}.primary:active svg{transform:rotate(-12deg)}.submit-note{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}.footer{padding-top:20px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px}.connection{display:inline-flex;gap:7px;align-items:center}.connection.good .dot{background:#3a684b}.notice{font-size:13px;border:1px solid #d3bb94;border-radius:5px;background:#f7efe0;padding:12px;margin-bottom:16px;color:#644d2d}.notice button{border:0;background:none;text-decoration:underline;font-size:12px;padding:5px 8px 0 0}.refresh{background:none;border:0;padding:2px;color:var(--muted);display:flex}.refresh svg{width:16px;height:16px}
+/* 12. TOAST */
+.toasts{position:fixed;right:20px;top:20px;z-index:30;display:grid;gap:8px;max-width:min(390px,calc(100vw - 40px))}.toast{padding:15px 38px 15px 17px;position:relative;background:var(--white);border:1px solid var(--line);border-left:3px solid var(--brass);box-shadow:var(--shadow);border-radius:5px;font-size:14px;animation:rise .25s}.toast.error{border-left-color:#a04b39}.toast.success{border-left-color:var(--green)}.toast button{position:absolute;right:8px;top:8px;background:none;border:0;font-size:19px}
+/* 13. MODAL */
+dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;width:calc(100% - 32px);color:var(--ink);background:var(--white);box-shadow:0 30px 100px #0004;text-align:center}dialog::backdrop{background:#24271e88;backdrop-filter:blur(5px)}.stamp{height:65px;width:65px;border:1px solid var(--green);border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;color:var(--green);outline:1px dashed #71846b;outline-offset:5px;animation:stamp .5s}.stamp svg{width:28px;height:28px}dialog h2{font-size:30px}dialog .result-time{font:42px var(--mono);margin:13px 0}dialog .result-date{font-size:14px;color:var(--muted)}.receipt{border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);margin:20px 0;padding:15px 0;display:flex;justify-content:space-around;gap:8px}.receipt span{font-size:11px;color:var(--muted)}.receipt b{display:block;font:17px var(--mono);color:var(--ink);margin-top:4px}dialog .primary{margin-top:24px}
+/* 14. ANIMATIONS */
+@keyframes rise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}@keyframes stamp{from{opacity:0;transform:scale(1.2) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(-6deg)}}@keyframes spin{to{transform:rotate(360deg)}}.busy svg{animation:spin 1.3s linear infinite}.reveal{animation:rise .45s both}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* 15. RESPONSIVE */
+@media(min-width:1440px){.page{padding-top:48px}}@media(max-width:1024px){.page{max-width:960px;padding:24px}.sidebar{padding:26px 24px}.form-side{padding:26px}.header{padding:28px}.live-clock{font-size:40px}.meta{letter-spacing:.07em}}@media(max-width:700px){.page{max-width:520px;padding:18px 16px}.masthead{margin-bottom:21px}.masthead>.meta{display:none}.header{padding:23px 21px}h1{font-size:33px}.subtitle{font-size:12px}.calendar{width:67px}.calendar strong{font-size:23px}.workspace{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--line);padding:22px;gap:18px}.sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:14px}.clock-top .analog{display:none}.live-clock{font-size:32px;margin:4px 0}.live-clock span{font-size:20px}.zone{font-size:11px}.status-card{padding:16px;flex:1}.sidebar .status-heading{margin-bottom:10px}.status-title{font-size:21px}.status-copy{min-height:0;font-size:12px}.session{margin-top:12px;padding-top:9px}.session strong{font-size:24px}.timeline{margin-top:15px}.sidebar .note,.serial{display:none}.form-side{padding:24px 22px}.footer{font-size:10px;flex-wrap:wrap}.form-heading{margin-bottom:18px}.instrument{padding-left:24px;padding-right:24px}.wheel-item{font-size:37px}.sidebar-top .eyebrow{font-size:10px}.header .eyebrow{font-size:10px}.header h1{letter-spacing:-1px}.calendar small{font-size:10px}}@media(max-width:380px){.page{padding:14px 12px}.form-side{padding:22px 18px}.header{padding:21px 18px}.header h1{font-size:29px}.employee{font-size:12px}.sidebar{padding:18px}.footer{font-size:10px}} 
 </style>
 </head>
 <body>
-
-<div class="app">
-  <div class="card">
-    <div class="plate">
-      <div class="rivet tl"></div><div class="rivet tr"></div>
-      <div class="rivet bl"></div><div class="rivet br"></div>
-      <h1>KARTU WAKTU</h1>
-      <p>Sistem Absensi Digital &middot; Gaya Klasik</p>
-      <button class="gear-btn" id="btnSettings" title="Pengaturan">&#9881;</button>
-    </div>
-
-    <div class="status-bar">
-      <div class="date-label" id="statusDate">—</div>
-      <div class="status-pill" id="statusPill"><span class="dot"></span><span id="statusText">Memuat…</span></div>
-    </div>
-
-    <div class="tabs">
-      <div class="tab active" data-tab="in">CLOCK IN</div>
-      <div class="tab" data-tab="out">CLOCK OUT</div>
-    </div>
-
-    <!-- CLOCK IN -->
-    <div class="panel" id="panelIn">
-      <div class="field">
-        <label for="inDate">Tanggal</label>
-        <input type="date" id="inDate">
-        <div class="hint-line" id="inHint"></div>
-      </div>
-
-      <div class="field">
-        <label>Pukul masuk</label>
-        <div class="time-picker">
-          <div class="wheel-col">
-            <button class="wheel-btn up" data-wheel="inHour" data-dir="-1">&#9650;</button>
-            <div class="wheel" id="inHour" tabindex="0"><div class="wheel-window"></div></div>
-            <button class="wheel-btn down" data-wheel="inHour" data-dir="1">&#9660;</button>
-          </div>
-          <div class="wheel-sep">:</div>
-          <div class="wheel-col">
-            <button class="wheel-btn up" data-wheel="inMinute" data-dir="-1">&#9650;</button>
-            <div class="wheel" id="inMinute" tabindex="0"><div class="wheel-window"></div></div>
-            <button class="wheel-btn down" data-wheel="inMinute" data-dir="1">&#9660;</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="inNama">Nama (opsional)</label>
-        <input type="text" id="inNama" placeholder="mis. Rasyid">
-      </div>
-
-      <div class="spacer"></div>
-      <button class="btn-submit" id="btnClockIn">STEMPEL MASUK</button>
-      <div class="msg" id="inMsg"></div>
-    </div>
-
-    <!-- CLOCK OUT -->
-    <div class="panel panel-hidden" id="panelOut">
-      <div class="field">
-        <label for="outDate">Tanggal</label>
-        <input type="date" id="outDate">
-        <div class="hint-line" id="outHint"></div>
-      </div>
-
-      <div class="field">
-        <label>Pukul keluar</label>
-        <div class="time-picker">
-          <div class="wheel-col">
-            <button class="wheel-btn up" data-wheel="outHour" data-dir="-1">&#9650;</button>
-            <div class="wheel" id="outHour" tabindex="0"><div class="wheel-window"></div></div>
-            <button class="wheel-btn down" data-wheel="outHour" data-dir="1">&#9660;</button>
-          </div>
-          <div class="wheel-sep">:</div>
-          <div class="wheel-col">
-            <button class="wheel-btn up" data-wheel="outMinute" data-dir="-1">&#9650;</button>
-            <div class="wheel" id="outMinute" tabindex="0"><div class="wheel-window"></div></div>
-            <button class="wheel-btn down" data-wheel="outMinute" data-dir="1">&#9660;</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field" style="flex:1; display:flex; flex-direction:column;">
-        <label for="outTask">Tugas yang sudah dikerjakan</label>
-        <textarea id="outTask" placeholder="Tulis ringkasan pekerjaan hari ini…"></textarea>
-      </div>
-
-      <button class="btn-submit out" id="btnClockOut">STEMPEL KELUAR</button>
-      <div class="msg" id="outMsg"></div>
-    </div>
+<svg aria-hidden="true" style="display:none"><symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol><symbol id="arrow-in" viewBox="0 0 24 24"><path d="M14 4h5v16h-5M3 12h12m-4-4 4 4-4 4"/></symbol><symbol id="arrow-out" viewBox="0 0 24 24"><path d="M10 4H5v16h5m0-8h11m-4-4 4 4-4 4"/></symbol><symbol id="calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5h2m2 0h2"/></symbol><symbol id="refresh" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-1 7M20 4v6h-6"/></symbol><symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol></svg>
+<div class="page">
+ <nav class="masthead" aria-label="Application"><div class="brand"><span class="brand-icon"><svg><use href="#clock"/></svg></span>TIMEKEEPER<span class="meta"> / </span></div><span class="meta">A little order in your everyday.</span><div class="employee"><span class="avatar" id="initial">R</span><span id="employeeName">Rasyid</span></div></nav>
+ <main class="shell">
+  <header class="header"><div><p class="eyebrow">Employee timesheet</p><h1>Daily Timekeeper<span style="color:var(--brass)">.</span></h1><p class="subtitle">Record your attendance and daily work.</p></div><div class="calendar" aria-label="Today's date"><div class="day" id="badgeDay">—</div><strong id="badgeDate">—</strong><small id="badgeYear">—</small></div></header>
+  <div class="workspace">
+   <aside class="sidebar" aria-label="Today's attendance">
+    <div class="sidebar-top"><div><div class="clock-top"><span class="eyebrow">Here & now</span><div class="analog" aria-hidden="true"><i class="hand hour" id="handHour"></i><i class="hand" id="handMinute"></i><i class="hand second" id="handSecond"></i></div></div><div class="live-clock" id="liveClock" aria-label="Current time">00:00<span>:00</span></div><p class="zone"><span class="dot"></span><span id="zoneLabel">Jakarta Time</span> · 24-hour format</p></div></div>
+    <section class="status-card"><div class="status-heading"><span class="eyebrow">Today's record</span><div style="display:flex;gap:10px;align-items:center"><span class="tag" id="statusTag">UNVERIFIED</span><button class="refresh" id="refresh" aria-label="Refresh today's status"><svg><use href="#refresh"/></svg></button></div></div><h2 class="status-title" id="statusTitle">Ready when you are.</h2><p class="status-copy" id="statusCopy">Connect your timesheet to see today's attendance.</p><div class="session"><span class="eyebrow" id="sessionLabel">Current session</span><strong id="sessionTimer">— : — : —</strong></div><div class="timeline"><div class="milestone" id="inMilestone"><i class="pin"></i><b id="inTime">— : —</b>Clock In</div><div class="milestone" id="outMilestone"><i class="pin"></i><b id="outTime">— : —</b>Clock Out</div></div><button class="status-action" id="statusAction" hidden>Clock Out →</button></section>
+    <div class="note"><svg><use href="#clock"/></svg><p>A moment to check in.<br>A record of a day well spent.</p></div><div class="serial"><span class="meta">Timesheet unit // TS-01<br>Attendance & daily work log</span><span class="bars" aria-hidden="true"></span></div>
+   </aside>
+   <section class="form-side" id="formSide" aria-label="Record attendance">
+    <div class="segmented" role="group" aria-label="Attendance mode"><button type="button" id="modeIn" aria-pressed="true"><svg><use href="#arrow-in"/></svg>CLOCK IN</button><button type="button" id="modeOut" aria-pressed="false"><svg><use href="#arrow-out"/></svg>CLOCK OUT</button></div>
+    <div class="form-heading"><h2 id="formTitle">Make your time count.</h2><p id="formSubtitle">Start your day with a simple check-in.</p></div>
+    <div id="pendingNotice" class="notice" hidden role="status"><strong>Not synced</strong><div id="pendingText">Your entry is saved on this device. Review it and submit again.</div><button type="button" id="discard">Discard local draft</button></div>
+    <div id="errorNotice" class="notice" hidden role="alert"><span id="errorText"></span><button type="button" id="missingIn" hidden>Clock In Sekarang</button></div>
+    <form id="attendanceForm" novalidate><label class="field-label" for="entryDate">01 / Entry date</label><div class="date-row"><svg><use href="#calendar"/></svg><input type="date" id="entryDate" required min="1900-01-01" max="9999-12-31"></div><p class="formatted-date" id="formattedDate">—</p>
+     <div class="time-label"><span class="field-label" id="timeLabel">02 / Clock in time</span><button type="button" class="text-button" id="useNow"><svg><use href="#refresh"/></svg>Use Current Time</button></div>
+     <div class="instrument"><i class="screw" aria-hidden="true"></i><i class="screw right" aria-hidden="true"></i><div class="wheel-labels" aria-hidden="true"><span>HOURS</span><span></span><span>MINUTES</span></div><div class="wheels"><div id="hourWheel" class="wheel" role="spinbutton" tabindex="0" aria-label="Hours" aria-valuemin="0" aria-valuemax="23" aria-valuenow="0" aria-describedby="wheelHelp"></div><span class="colon" aria-hidden="true">:</span><div id="minuteWheel" class="wheel" role="spinbutton" tabindex="0" aria-label="Minutes" aria-valuemin="0" aria-valuemax="59" aria-valuenow="0" aria-describedby="wheelHelp"></div></div><div class="instrument-foot"><span>PRECISION TIME SELECTOR</span><span>24H / LOCAL</span></div></div><p class="wheel-help" id="wheelHelp">Scroll, drag, or use ↑ ↓ to set your time.</p>
+     <div class="task-reveal" id="taskRegion" inert><div class="task-inner"><label class="task-label" for="tasks">What did you work on today?</label><textarea id="tasks" rows="4" placeholder="• Develop automation process&#10;• Testing and debugging&#10;• Prepare documentation&#10;• User discussion" maxlength="1000"></textarea><div class="counter" id="taskCounter">0 / 1000</div><div class="chips" id="taskChips"></div></div></div>
+     <button class="primary" id="submit" type="submit"><svg><use id="submitIcon" href="#arrow-in"/></svg><span id="submitText">CLOCK IN NOW</span></button><p class="submit-note" id="submitNote">Your entry will be saved to your Google Sheet.</p>
+    </form>
+   </section>
   </div>
+ </main>
+ <footer class="footer"><span>TIMEKEEPER © <span id="footerYear"></span> <span style="margin:0 7px">/</span> Attendance & Daily Work Log</span><span class="connection" id="connection"><span class="dot"></span><span id="connectionText">Not Configured</span></span></footer>
 </div>
-
-<div class="stamp-flash" id="stampFlash"><span id="stampFlashText">TERCATAT</span></div>
-
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h2>Pengaturan Koneksi</h2>
-    <p class="hint">Tempel URL Web App Google Apps Script yang sudah di-deploy, supaya kartu waktu ini bisa membaca &amp; menulis ke Google Sheet Anda.</p>
-    <div class="field">
-      <label for="cfgUrl">URL Apps Script (.../exec)</label>
-      <input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/…/exec">
-    </div>
-    <div class="field">
-      <label for="cfgNama">Nama default (opsional)</label>
-      <input type="text" id="cfgNama" placeholder="mis. Rasyid">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" id="btnModalCancel">Nanti saja</button>
-      <button class="btn-save" id="btnModalSave">Simpan</button>
-    </div>
-  </div>
-</div>
-
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+<dialog id="successModal" aria-labelledby="successTitle"><div class="stamp"><svg><use href="#check"/></svg></div><p class="eyebrow">Time record · confirmed</p><h2 id="successTitle">Clocked In</h2><div class="result-time" id="resultTime"></div><p class="result-date" id="resultDate"></p><div class="receipt" id="receipt" hidden><span>Clock In<b id="receiptIn"></b></span><span>Clock Out<b id="receiptOut"></b></span><span>Total<b id="receiptTotal"></b></span></div><p class="subtitle">Successfully saved to Google Sheets.</p><button class="primary" id="closeModal">DONE</button></dialog>
 <script>
-(function(){
-  const ITEM_H = 38;
-  const pad2 = n => String(n).padStart(2,'0');
-  const todayStr = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  };
-  const fmtLong = (dateStr) => {
-    const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  };
-  const fmtShort = (dateStr) => {
-    const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
-  };
+'use strict';
+/* 01. CONFIG
+   One employee per sheet/deployment. This display name is not authentication.
+   Use the /exec deployment URL, never the editor or /dev URL. No secrets here.
+   Match timezone, sheet name, and task rules in Code.gs. */
+/* ================================================================
 
-  let settings = JSON.parse(localStorage.getItem('kartuWaktuSettings') || '{}');
+ ████████╗██╗███╗   ███╗███████╗███████╗██╗  ██╗███████╗███████╗████████╗
+ ╚══██╔══╝██║████╗ ████║██╔════╝██╔════╝██║  ██║██╔════╝██╔════╝╚══██╔══╝
+    ██║   ██║██╔████╔██║█████╗  ███████╗███████║█████╗  █████╗     ██║
+    ██║   ██║██║╚██╔╝██║██╔══╝  ╚════██║██╔══██║██╔══╝  ██╔══╝     ██║
+    ██║   ██║██║ ╚═╝ ██║███████╗███████║██║  ██║███████╗███████╗   ██║
+    ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝
 
-  // ---------- Wheel picker ----------
-  function buildWheel(el, count, initial, onChange){
-    el.querySelectorAll('.wheel-item').forEach(n => n.remove());
-    const frag = document.createDocumentFragment();
-    for(let i=0;i<count;i++){
-      const item = document.createElement('div');
-      item.className = 'wheel-item';
-      item.textContent = pad2(i);
-      item.dataset.value = i;
-      frag.appendChild(item);
-    }
-    el.appendChild(frag);
-    const items = () => el.querySelectorAll('.wheel-item');
-    let current = initial;
+                    EDIT CONFIGURATION HERE
 
-    function scrollToIdx(i, smooth){
-      el.scrollTo({ top: i*ITEM_H, behavior: smooth ? 'smooth' : 'auto' });
-    }
-    function paintActive(i){
-      items().forEach((it, idx) => it.classList.toggle('active', idx === i));
-    }
-    function settle(){
-      const idx = Math.max(0, Math.min(count-1, Math.round(el.scrollTop / ITEM_H)));
-      current = idx;
-      scrollToIdx(idx, true);
-      paintActive(idx);
-      onChange(idx);
-    }
-    let t;
-    el.addEventListener('scroll', () => {
-      const idx = Math.max(0, Math.min(count-1, Math.round(el.scrollTop / ITEM_H)));
-      paintActive(idx);
-      clearTimeout(t);
-      t = setTimeout(settle, 90);
-    }, { passive:true });
-    el.addEventListener('click', (e) => {
-      const it = e.target.closest('.wheel-item');
-      if(!it) return;
-      const idx = parseInt(it.dataset.value, 10);
-      current = idx;
-      scrollToIdx(idx, true);
-      paintActive(idx);
-      onChange(idx);
-    });
-    el.addEventListener('keydown', (e) => {
-      if(e.key === 'ArrowUp'){ e.preventDefault(); api.step(-1); }
-      if(e.key === 'ArrowDown'){ e.preventDefault(); api.step(1); }
-    });
-
-    const api = {
-      setValue(i, smooth){
-        current = Math.max(0, Math.min(count-1, i));
-        scrollToIdx(current, !!smooth);
-        paintActive(current);
-      },
-      step(delta){
-        const idx = Math.max(0, Math.min(count-1, current + delta));
-        current = idx;
-        scrollToIdx(idx, true);
-        paintActive(idx);
-        onChange(idx);
-      },
-      getValue(){ return current; }
-    };
-    requestAnimationFrame(() => api.setValue(initial, false));
-    return api;
-  }
-
-  const now = new Date();
-  const wheels = {
-    inHour:   buildWheel(document.getElementById('inHour'), 24, now.getHours(), () => {}),
-    inMinute: buildWheel(document.getElementById('inMinute'), 60, now.getMinutes(), () => {}),
-    outHour:  buildWheel(document.getElementById('outHour'), 24, now.getHours(), () => {}),
-    outMinute:buildWheel(document.getElementById('outMinute'), 60, now.getMinutes(), () => {}),
-  };
-  document.querySelectorAll('.wheel-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      wheels[btn.dataset.wheel].step(parseInt(btn.dataset.dir, 10));
-    });
-  });
-
-  // ---------- Tabs ----------
-  const tabs = document.querySelectorAll('.tab');
-  const panelIn = document.getElementById('panelIn');
-  const panelOut = document.getElementById('panelOut');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const isIn = tab.dataset.tab === 'in';
-      panelIn.classList.toggle('panel-hidden', !isIn);
-      panelOut.classList.toggle('panel-hidden', isIn);
-      if(isIn) reflectDate('in', document.getElementById('inDate').value);
-      else reflectDate('out', document.getElementById('outDate').value);
-    });
-  });
-
-  // ---------- Defaults ----------
-  const inDateEl = document.getElementById('inDate');
-  const outDateEl = document.getElementById('outDate');
-  inDateEl.value = todayStr();
-  outDateEl.value = todayStr();
-  document.getElementById('inNama').value = settings.nama || '';
-  document.getElementById('statusDate').textContent = fmtLong(todayStr());
-
-  // ---------- API calls ----------
-  async function apiPost(payload){
-    const res = await fetch(settings.scriptUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    return res.json();
-  }
-  async function apiCheck(date){
-    const res = await fetch(`${settings.scriptUrl}?action=check&date=${date}`);
-    return res.json();
-  }
-
-  function setMsg(el, text, type){
-    el.textContent = text;
-    el.className = 'msg show ' + type;
-  }
-  function clearMsg(el){ el.className = 'msg'; }
-
-  function stampFlash(text){
-    const el = document.getElementById('stampFlash');
-    document.getElementById('stampFlashText').textContent = text;
-    el.classList.remove('show'); void el.offsetWidth;
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 1200);
-  }
-
-  // Debounced per-date lookup so switching tabs / changing dates is instant & doesn't spam requests
-  let reflectTimers = {};
-  function reflectDate(mode, date){
-    clearTimeout(reflectTimers[mode]);
-    const hintEl = document.getElementById(mode === 'in' ? 'inHint' : 'outHint');
-    if(!settings.scriptUrl){ hintEl.textContent=''; return; }
-    hintEl.textContent = 'Memeriksa data…';
-    hintEl.className = 'hint-line';
-    reflectTimers[mode] = setTimeout(async () => {
-      try{
-        const r = await apiCheck(date);
-        if(mode === 'in'){
-          if(r.success && r.entry){
-            hintEl.textContent = `Sudah tercatat masuk pukul ${r.entry.jamMasuk} untuk ${fmtShort(date)}.`;
-            hintEl.className = 'hint-line warn';
-          } else {
-            hintEl.textContent = `Belum ada catatan untuk ${fmtShort(date)}.`;
-            hintEl.className = 'hint-line';
-          }
-        } else {
-          if(r.success && r.entry){
-            const [h,m] = (r.entry.jamMasuk || '00:00').split(':').map(Number);
-            hintEl.textContent = r.entry.jamKeluar
-              ? `Sudah clock out pukul ${r.entry.jamKeluar}. Simpan lagi untuk memperbarui.`
-              : `Masuk pukul ${r.entry.jamMasuk} — siap untuk clock out.`;
-            hintEl.className = r.entry.jamKeluar ? 'hint-line warn' : 'hint-line ok';
-            if(r.entry.tugas) document.getElementById('outTask').value = r.entry.tugas;
-          } else {
-            hintEl.textContent = `Belum ada clock in untuk ${fmtShort(date)}. Clock out belum bisa disimpan.`;
-            hintEl.className = 'hint-line warn';
-          }
-        }
-      } catch(err){
-        hintEl.textContent = 'Gagal memeriksa data.';
-        hintEl.className = 'hint-line warn';
-      }
-    }, 250);
-  }
-
-  inDateEl.addEventListener('change', () => reflectDate('in', inDateEl.value));
-  outDateEl.addEventListener('change', () => reflectDate('out', outDateEl.value));
-
-  async function refreshStatus(){
-    const pill = document.getElementById('statusPill');
-    const text = document.getElementById('statusText');
-    if(!settings.scriptUrl){
-      pill.className = 'status-pill';
-      text.textContent = 'Belum terhubung';
-      return;
-    }
-    try{
-      const r = await apiCheck(todayStr());
-      if(r.success && r.entry){
-        if(r.entry.jamKeluar){
-          pill.className = 'status-pill done';
-          text.textContent = `Selesai — keluar ${r.entry.jamKeluar}`;
-        } else {
-          pill.className = 'status-pill in';
-          text.textContent = `Masuk pukul ${r.entry.jamMasuk}`;
-        }
-      } else {
-        pill.className = 'status-pill';
-        text.textContent = 'Belum clock in';
-      }
-    } catch(err){
-      pill.className = 'status-pill';
-      text.textContent = 'Gagal memuat status';
-    }
-  }
-
-  // ---------- Submit: Clock In ----------
-  let submittingIn = false;
-  document.getElementById('btnClockIn').addEventListener('click', async () => {
-    if(submittingIn) return;
-    const btn = document.getElementById('btnClockIn');
-    const msg = document.getElementById('inMsg');
-    clearMsg(msg);
-    if(!settings.scriptUrl){ openModal(); return; }
-    const date = inDateEl.value;
-    const time = `${pad2(wheels.inHour.getValue())}:${pad2(wheels.inMinute.getValue())}`;
-    const nama = document.getElementById('inNama').value.trim();
-    settings.nama = nama; localStorage.setItem('kartuWaktuSettings', JSON.stringify(settings));
-
-    submittingIn = true;
-    btn.disabled = true; btn.textContent = 'MENYIMPAN…';
-    try{
-      const r = await apiPost({ action:'clockIn', date, time, nama });
-      if(r.success){
-        stampFlash('MASUK TERCATAT');
-        setMsg(msg, `Clock in tersimpan untuk ${fmtLong(date)} pukul ${time}.`, 'ok');
-        refreshStatus();
-        reflectDate('in', date);
-      } else {
-        setMsg(msg, r.message || 'Gagal menyimpan data.', 'error');
-      }
-    } catch(err){
-      setMsg(msg, 'Tidak dapat terhubung ke Google Sheet. Periksa URL Apps Script di pengaturan.', 'error');
-    } finally {
-      submittingIn = false;
-      btn.disabled = false; btn.textContent = 'STEMPEL MASUK';
-    }
-  });
-
-  // ---------- Submit: Clock Out ----------
-  let submittingOut = false;
-  document.getElementById('btnClockOut').addEventListener('click', async () => {
-    if(submittingOut) return;
-    const btn = document.getElementById('btnClockOut');
-    const msg = document.getElementById('outMsg');
-    clearMsg(msg);
-    if(!settings.scriptUrl){ openModal(); return; }
-    const date = outDateEl.value;
-    const time = `${pad2(wheels.outHour.getValue())}:${pad2(wheels.outMinute.getValue())}`;
-    const tugas = document.getElementById('outTask').value.trim();
-
-    submittingOut = true;
-    btn.disabled = true; btn.textContent = 'MENYIMPAN…';
-    try{
-      const r = await apiPost({ action:'clockOut', date, time, tugas });
-      if(r.success){
-        stampFlash('KELUAR TERCATAT');
-        setMsg(msg, `Clock out tersimpan untuk ${fmtLong(date)} pukul ${time}.`, 'ok');
-        refreshStatus();
-        reflectDate('out', date);
-      } else {
-        setMsg(msg, r.message || 'Gagal menyimpan data. Pastikan sudah clock in tanggal tersebut.', 'error');
-      }
-    } catch(err){
-      setMsg(msg, 'Tidak dapat terhubung ke Google Sheet. Periksa URL Apps Script di pengaturan.', 'error');
-    } finally {
-      submittingOut = false;
-      btn.disabled = false; btn.textContent = 'STEMPEL KELUAR';
-    }
-  });
-
-  // ---------- Settings modal ----------
-  const overlay = document.getElementById('modalOverlay');
-  function openModal(){
-    document.getElementById('cfgUrl').value = settings.scriptUrl || '';
-    document.getElementById('cfgNama').value = settings.nama || '';
-    overlay.classList.add('show');
-  }
-  function closeModal(){ overlay.classList.remove('show'); }
-  document.getElementById('btnSettings').addEventListener('click', openModal);
-  document.getElementById('btnModalCancel').addEventListener('click', closeModal);
-  document.getElementById('btnModalSave').addEventListener('click', () => {
-    const url = document.getElementById('cfgUrl').value.trim();
-    const nama = document.getElementById('cfgNama').value.trim();
-    settings = { scriptUrl:url, nama:nama };
-    localStorage.setItem('kartuWaktuSettings', JSON.stringify(settings));
-    document.getElementById('inNama').value = nama;
-    closeModal();
-    refreshStatus();
-    reflectDate('in', inDateEl.value);
-  });
-
-  if(!settings.scriptUrl){ openModal(); }
-  refreshStatus();
-  reflectDate('in', inDateEl.value);
-})();
+================================================================ */
+const CONFIG = {
+ employeeName:'Rasyid', timezone:'Asia/Jakarta', timezoneLabel:'Jakarta Time',
+ googleAppsScriptUrl:'https://script.google.com/macros/s/AKfycby9_kXerL5UStxEt5PBPSqksbWBHkSvxKMjNwMkHAwYd6xkyy8g381fWBJ44u3mvcNEyw/exec', sheetName:'Timesheet',
+ taskRequired:true, maxTaskLength:1000, timeoutMs:25000, statusRefreshMs:120000,
+ pendingStorageKey:'timesheetPendingEntry', locale:'en-GB',
+ taskChips:['Development','Testing','Documentation','Meeting','Support','Monitoring','Bug Fixing','Analysis']
+};
+/* 02. STATE */
+const $ = id => document.getElementById(id);
+const state = {mode:'clockIn',busy:false,today:'',record:null,statusKnown:false,statusLoading:false,statusVersion:0, pending:false,lastStatus:0};
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const pad = n => String(n).padStart(2,'0');
+/* 03. DATE UTILITIES */
+function zonedParts(date=new Date()) { const p = {}; new Intl.DateTimeFormat('en-GB',{timeZone:CONFIG.timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(date).forEach(v=>{p[v.type]=v.value;}); return p; }
+function todayKey(p=zonedParts()){return p.year+'-'+p.month+'-'+p.day;}
+function validDate(v){const d=new Date(v+'T12:00:00Z');return /^\d{4}-\d{2}-\d{2}$/.test(v)&&!isNaN(d)&&d.toISOString().slice(0,10)===v&&v>='1900-01-01'&&v<='9999-12-31';}
+function prettyDate(v,weekday=false){if(!validDate(v))return 'Choose a valid date.';return new Intl.DateTimeFormat(CONFIG.locale,{day:'numeric',month:'long',year:'numeric',...(weekday?{weekday:'long'}:{}),timeZone:'UTC'}).format(new Date(v+'T12:00:00Z'));}
+function updateDate(){ $('formattedDate').textContent=prettyDate($('entryDate').value,true); }
+/* 04. TIME UTILITIES */
+function minutes(t){const [h,m]=t.split(':').map(Number);return h*60+m;}
+function duration(a,b){const n=Math.max(0,minutes(b)-minutes(a));return Math.floor(n/60)+'h '+n%60+'m';}
+function validTime(t){return typeof t==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(t);}
+function selectedTime(){return pad(hourWheel.value)+':'+pad(minuteWheel.value);}
+/* 05. API */
+function configured(){return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(CONFIG.googleAppsScriptUrl);}
+class ApiError extends Error {constructor(message,code){super(message);this.code=code;}}
+async function api(payload){
+ if(!configured())throw new ApiError('Google Apps Script belum dikonfigurasi. Isi URL deployment pada CONFIG.','NOT_CONFIGURED');
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
+ try {
+  // JSON body with a CORS-safelisted Content-Type avoids an OPTIONS preflight.
+  // ContentService redirects are followed. Never use no-cors: it hides the result.
+  const response=await fetch(CONFIG.googleAppsScriptUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow',credentials:'omit',signal:controller.signal});
+  if(!response.ok)throw new ApiError('Unable to connect to Timesheet database. Try again.','NETWORK');
+  let result;try{result=await response.json();}catch{throw new ApiError('Invalid server response. Check the Apps Script deployment and access settings.','INVALID_RESPONSE');}
+  if(!result || typeof result.success!=='boolean')throw new ApiError('Invalid API response.','INVALID_RESPONSE');
+  if(!result.success)throw new ApiError(result.message||'Unable to save your entry.',result.code||'API_ERROR');
+  if(result.data!==null && (!result.data||result.data.date!==payload.date||!validTime(result.data.clockIn)||(result.data.clockOut!==''&&!validTime(result.data.clockOut))||typeof result.data.task!=='string'))throw new ApiError('Incomplete attendance data received. Refresh to verify your record.','INVALID_RESPONSE');
+  if(payload.action!=='getStatus'&&!result.data)throw new ApiError('Save could not be confirmed. Refresh your status.','INVALID_RESPONSE');
+  return result.data;
+ }catch(error){if(error.name==='AbortError')throw new ApiError('Request timed out. Your entry may have reached the sheet. Refresh status before retrying.','TIMEOUT');if(error instanceof ApiError)throw error;throw new ApiError('Unable to connect to Timesheet database. Check your connection and try again.','NETWORK');}finally{clearTimeout(timeout);}
+}
+/* 06. GOOGLE SHEETS */
+function connection(label,good=false){$('connectionText').textContent=label;$('connection').classList.toggle('good',good);}
+async function refreshStatus(announce=false){
+ if(state.statusLoading||state.busy)return;
+ if(!configured()){connection('Not Configured');return;}
+ state.statusLoading=true;const version=++state.statusVersion;const date=state.today;$('refresh').disabled=true;connection('Checking connection…');
+ try{const record=await api({action:'getStatus',date});if(version!==state.statusVersion||date!==state.today)return;state.record=record;state.statusKnown=true;state.lastStatus=Date.now();connection('Synced with Google Sheets',true);renderStatus();if(announce)toast('Attendance status refreshed.','info');}
+ catch(error){if(version!==state.statusVersion)return;state.statusKnown=false;connection(error.code==='NOT_CONFIGURED'?'Not Configured':'Connection unavailable');renderStatus();if(announce)toast(error.message,'error');}
+ finally{state.statusLoading=false;$('refresh').disabled=false;}
+}
+/* 07. TIME WHEEL — native touch inertia + desktop drag, click and keyboard */
+class TimeWheel {
+ constructor(el,count){this.el=el;this.count=count;this.value=0;this.step=52;this.timer=null;this.drag=null;
+  for(let n=0;n<count;n++){const item=document.createElement('div');item.className='wheel-item';const number=document.createElement('span');number.textContent=pad(n);item.append(number);item.dataset.value=n;item.setAttribute('aria-hidden','true');el.append(item);}
+  this.paint();el.addEventListener('scroll',()=>{this.value=Math.max(0,Math.min(count-1,Math.round(el.scrollTop/this.step)));this.paint();clearTimeout(this.timer);this.timer=setTimeout(()=>{if(!this.drag)this.set(this.value,true);},140);},{passive:true});
+  el.addEventListener('keydown',e=>{let next=this.value;if(e.key==='ArrowUp')next--;else if(e.key==='ArrowDown')next++;else if(e.key==='PageUp')next-=5;else if(e.key==='PageDown')next+=5;else if(e.key==='Home')next=0;else if(e.key==='End')next=count-1;else return;e.preventDefault();if(!state.busy)this.set(next,true);});
+  el.addEventListener('wheel',e=>{e.preventDefault();if(!state.busy&&e.deltaY){const t=performance.now();if(!this.lastWheel||t-this.lastWheel>65){this.set(this.value+Math.sign(e.deltaY),true);this.lastWheel=t;}}},{passive:false});
+  el.addEventListener('pointerdown',e=>{if(state.busy){e.preventDefault();return;}if(e.pointerType==='touch')return;if(e.button!==0)return;el.focus({preventScroll:true});this.drag={y:e.clientY,start:el.scrollTop,lastY:e.clientY,lastT:performance.now(),v:0,moved:false};el.setPointerCapture(e.pointerId);el.classList.add('dragging');});
+  el.addEventListener('pointermove',e=>{if(!this.drag)return;const d=this.drag;const now=performance.now();d.v=(d.lastY-e.clientY)/Math.max(1,now-d.lastT);d.lastT=now;d.lastY=e.clientY;if(Math.abs(e.clientY-d.y)>4)d.moved=true;el.scrollTop=d.start+d.y-e.clientY;});
+  const finish=e=>{if(!this.drag)return;const d=this.drag;this.drag=null;el.classList.remove('dragging');if(d.moved){const velocity=performance.now()-d.lastT<100?d.v:0;this.set(Math.round((el.scrollTop+velocity*100)/this.step),true);}else{const rect=el.getBoundingClientRect();this.set(Math.round((el.scrollTop+e.clientY-rect.top-78)/this.step),true);}if(el.hasPointerCapture(e.pointerId))el.releasePointerCapture(e.pointerId);};
+  el.addEventListener('pointerup',finish);el.addEventListener('pointercancel',()=>{this.drag=null;el.classList.remove('dragging');this.set(this.value,true);});
+  el.addEventListener('click',e=>{if(state.busy||e.pointerType==='mouse')return;const item=e.target.closest('.wheel-item');if(item)this.set(Number(item.dataset.value),true);});
+ }
+ set(n,animate=false){this.value=Math.max(0,Math.min(this.count-1,n));this.el.scrollTo({top:this.value*this.step,behavior:animate&&!reducedMotion.matches?'smooth':'instant'});this.paint();}
+ paint(){this.el.setAttribute('aria-valuenow',this.value);this.el.setAttribute('aria-valuetext',pad(this.value));Array.from(this.el.children).forEach((el,i)=>el.classList.toggle('active',i===this.value));}
+}
+const hourWheel=new TimeWheel($('hourWheel'),24),minuteWheel=new TimeWheel($('minuteWheel'),60);
+function useCurrentTime(animate=true){const p=zonedParts();hourWheel.set(Number(p.hour),animate);minuteWheel.set(Number(p.minute),animate);}
+/* 08. CLOCK IN */
+function entryPayload(){return state.mode==='clockIn'?{action:'clockIn',date:$('entryDate').value,clockIn:selectedTime()}:{action:'clockOut',date:$('entryDate').value,clockOut:selectedTime(),task:$('tasks').value};}
+async function submitEntry(e){
+ e.preventDefault();if(state.busy)return;hideError();const payload=entryPayload();
+ if(!validDate(payload.date)){showError('Please select a valid date.');$('entryDate').focus();return;}
+ if(!validTime(payload.clockIn||payload.clockOut)){showError('Please select a valid time.');return;}
+ if(payload.action==='clockOut'&&((CONFIG.taskRequired&&!payload.task.trim())||payload.task.length>CONFIG.maxTaskLength)){showError('Please describe your tasks, up to '+CONFIG.maxTaskLength+' characters.');$('tasks').focus();return;}
+ if(payload.action==='clockOut'&&state.statusKnown&&state.record&&payload.date===state.today&&payload.clockOut<state.record.clockIn){showError('Clock Out tidak boleh lebih awal dari Clock In.');return;}
+ setBusy(true);++state.statusVersion;savePending(payload,false);
+ try{const data=await api(payload);clearPending();if(data.date===state.today){state.record=data;state.statusKnown=true;}connection('Synced with Google Sheets',true);renderStatus();showSuccess(data,payload.action);toast(payload.action==='clockIn'?'Clock In berhasil disimpan.':'Clock Out berhasil disimpan.','success');}
+ catch(error){savePending(payload,true);showError(error.message,error.code);toast(error.message,['ALREADY_CLOCKED_IN','NO_CLOCK_IN','EARLY_CLOCK_OUT'].includes(error.code)?'warning':'error');if(['NETWORK','TIMEOUT','INVALID_RESPONSE','NOT_CONFIGURED'].includes(error.code)){connection(error.code==='NOT_CONFIGURED'?'Not Configured':'Not synced');} }
+ finally{setBusy(false);}
+}
+/* 09. CLOCK OUT */
+function changeMode(mode){if(state.busy)return;state.mode=mode;const out=mode==='clockOut';$('formSide').classList.toggle('out',out);$('modeIn').setAttribute('aria-pressed',String(!out));$('modeOut').setAttribute('aria-pressed',String(out));$('taskRegion').inert=!out;$('tasks').required=out&&CONFIG.taskRequired;$('formTitle').textContent=out?'A day well spent.':'Make your time count.';$('formSubtitle').textContent=out?'Wrap up your day and record your progress.':'Start your day with a simple check-in.';$('timeLabel').textContent=out?'02 / Clock out time':'02 / Clock in time';$('submitText').textContent=out?'CLOCK OUT NOW':'CLOCK IN NOW';$('submitIcon').setAttribute('href',out?'#arrow-out':'#arrow-in');hideError();}
+function updateTasks(){const t=$('tasks');$('taskCounter').textContent=t.value.length+' / '+CONFIG.maxTaskLength;t.style.height='auto';t.style.height=Math.min(280,Math.max(113,t.scrollHeight))+'px';}
+/* 10. STATUS */
+function renderStatus(){const r=state.record,known=state.statusKnown;$('statusTag').textContent=!known?'UNVERIFIED':r?.clockOut?'COMPLETE':r?'WORKING':'NOT STARTED';$('statusTitle').textContent=!known?'Status unavailable.':r?.clockOut?'Today, completed.':r?'You’re on the clock.':'Ready when you are.';$('statusCopy').textContent=!known?'Refresh to verify your attendance.':r?.clockOut?'Your attendance and daily work are recorded.':r?'One task at a time. Make today a good one.':"You haven't clocked in today.";$('inTime').textContent=r?.clockIn||'— : —';$('outTime').textContent=r?.clockOut||'— : —';$('inMilestone').classList.toggle('done',!!r?.clockIn);$('outMilestone').classList.toggle('done',!!r?.clockOut);$('sessionLabel').textContent=r?.clockOut?'Total time':known?'Current session':'Unverified session';$('statusAction').hidden=!known;$('statusAction').textContent=r?.clockOut?'Review Clock Out →':r?'Clock Out →':'Clock In →';tick();}
+/* 11. TIMER */
+function tick(){const p=zonedParts(),key=todayKey(p);$('liveClock').replaceChildren(document.createTextNode(p.hour+':'+p.minute),Object.assign(document.createElement('span'),{textContent:':'+p.second}));$('handHour').style.transform='rotate('+((Number(p.hour)%12)*30+Number(p.minute)/2)+'deg)';$('handMinute').style.transform='rotate('+(Number(p.minute)*6)+'deg)';$('handSecond').style.transform='rotate('+(Number(p.second)*6)+'deg)';
+ if(state.today!==key){const old=state.today;state.today=key;state.record=null;state.statusKnown=false;if(!state.pending&&!state.busy&&(!old||$('entryDate').value===old)){$('entryDate').value=key;updateDate();}const d=new Date(key+'T12:00:00Z');$('badgeDay').textContent=new Intl.DateTimeFormat('en-GB',{weekday:'short',timeZone:'UTC'}).format(d).toUpperCase();$('badgeDate').textContent=p.day+' '+new Intl.DateTimeFormat('en-GB',{month:'short',timeZone:'UTC'}).format(d).toUpperCase();$('badgeYear').textContent=p.year;$('footerYear').textContent=p.year;if(old){renderStatus();refreshStatus();}}
+ const r=state.record;let total=null;if(r?.clockIn){total=r.clockOut?(minutes(r.clockOut)-minutes(r.clockIn))*60:(Number(p.hour)*3600+Number(p.minute)*60+Number(p.second)-minutes(r.clockIn)*60);total=Math.max(0,total);}$('sessionTimer').textContent=total===null?'— : — : —':pad(Math.floor(total/3600))+' : '+pad(Math.floor(total/60)%60)+' : '+pad(total%60);
+}
+/* 12. UI */
+function setBusy(busy){state.busy=busy;$('attendanceForm').inert=busy;['submit','modeIn','modeOut','refresh','discard','statusAction'].forEach(id=>$(id).disabled=busy);$('submit').classList.toggle('busy',busy);$('submit').setAttribute('aria-busy',String(busy));$('submitText').textContent=busy?'RECORDING…':state.mode==='clockIn'?'CLOCK IN NOW':'CLOCK OUT NOW';}
+function hideError(){$('errorNotice').hidden=true;$('missingIn').hidden=true;}
+function showError(message,code){$('errorText').textContent=message;$('errorNotice').hidden=false;$('missingIn').hidden=code!=='NO_CLOCK_IN';}
+function showSuccess(data,mode){$('successTitle').textContent=mode==='clockIn'?'Clocked In':'Day Completed';$('resultTime').textContent=mode==='clockIn'?data.clockIn:data.clockOut;$('resultDate').textContent=prettyDate(data.date);$('receipt').hidden=mode==='clockIn';$('receiptIn').textContent=data.clockIn;$('receiptOut').textContent=data.clockOut;$('receiptTotal').textContent=data.clockOut?duration(data.clockIn,data.clockOut):'';$('successModal').showModal();}
+/* 13. TOAST */
+function toast(message,type='info'){const el=document.createElement('div');el.className='toast '+type;const text=document.createElement('span');text.textContent=message;const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Dismiss notification');close.onclick=()=>el.remove();el.append(text,close);$('toasts').append(el);while($('toasts').children.length>3)$('toasts').firstChild.remove();setTimeout(()=>el.remove(),8000);}
+/* 14. STORAGE — a failed submission is never a confirmed attendance record */
+function savePending(payload,show){state.pending=true;let saved=true;try{localStorage.setItem(CONFIG.pendingStorageKey,JSON.stringify({payload,endpoint:CONFIG.googleAppsScriptUrl,employee:CONFIG.employeeName,savedAt:Date.now()}));}catch{saved=false;}$('pendingText').textContent=saved?'Your entry is saved on this device. Review it and submit again.':'Device storage is unavailable. Keep this page open to retain your entry.';$('pendingNotice').hidden=!show;}
+function clearPending(){state.pending=false;try{localStorage.removeItem(CONFIG.pendingStorageKey);}catch{}$('pendingNotice').hidden=true;}
+function restorePending(){try{const draft=JSON.parse(localStorage.getItem(CONFIG.pendingStorageKey)||'null');if(!draft)return;const p=draft.payload;if(draft.endpoint!==CONFIG.googleAppsScriptUrl||draft.employee!==CONFIG.employeeName)return;if(!p||!validDate(p.date)||!['clockIn','clockOut'].includes(p.action)||!validTime(p.clockIn||p.clockOut))return;state.pending=true;changeMode(p.action);$('entryDate').value=p.date;const t=(p.clockIn||p.clockOut).split(':').map(Number);hourWheel.set(t[0]);minuteWheel.set(t[1]);if(typeof p.task==='string')$('tasks').value=p.task.slice(0,CONFIG.maxTaskLength);updateTasks();updateDate();$('pendingNotice').hidden=false;}catch{toast('The saved draft could not be restored.','warning');}}
+/* 15. INITIALIZATION */
+$('employeeName').textContent=CONFIG.employeeName;$('initial').textContent=CONFIG.employeeName.charAt(0).toUpperCase();$('zoneLabel').textContent=CONFIG.timezoneLabel;$('tasks').maxLength=CONFIG.maxTaskLength;$('taskCounter').textContent='0 / '+CONFIG.maxTaskLength;
+CONFIG.taskChips.forEach(label=>{const button=document.createElement('button');button.type='button';button.className='chip';button.textContent='+ '+label;button.onclick=()=>{const field=$('tasks');const added=(field.value?'\n':'')+'• '+label;if(field.value.length+added.length>CONFIG.maxTaskLength){toast('Task character limit reached.','warning');return;}field.value+=added;updateTasks();field.focus();};$('taskChips').append(button);});
+$('modeIn').onclick=()=>changeMode('clockIn');$('modeOut').onclick=()=>changeMode('clockOut');$('useNow').onclick=()=>useCurrentTime();$('entryDate').onchange=()=>{updateDate();hideError();};$('tasks').oninput=updateTasks;$('attendanceForm').onsubmit=submitEntry;$('refresh').onclick=()=>refreshStatus(true);$('missingIn').onclick=()=>changeMode('clockIn');$('closeModal').onclick=()=>$('successModal').close();$('successModal').addEventListener('close',()=>$('submit').focus());$('discard').onclick=()=>{clearPending();hideError();$('tasks').value='';$('entryDate').value=state.today;updateDate();updateTasks();useCurrentTime();toast('Local draft discarded.','info');};$('statusAction').onclick=()=>{if(state.pending){toast('Finish or discard your unsynced draft first.','warning');return;}$('entryDate').value=state.today;updateDate();changeMode(state.record?'clockOut':'clockIn');if(state.record?.clockOut){$('tasks').value=state.record.task;updateTasks();const [h,m]=state.record.clockOut.split(':').map(Number);hourWheel.set(h,true);minuteWheel.set(m,true);}$('modeOut').scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth',block:'nearest'});};
+tick();useCurrentTime(false);restorePending();refreshStatus();setInterval(tick,1000);setInterval(()=>{if(!document.hidden)refreshStatus();},CONFIG.statusRefreshMs);document.addEventListener('visibilitychange',()=>{if(!document.hidden){tick();if(Date.now()-state.lastStatus>30000)refreshStatus();}});window.addEventListener('online',()=>{toast('Connection restored. Review and submit any unsynced entry.');refreshStatus();});window.addEventListener('offline',()=>{connection('Offline');toast('You are offline. Entries will remain unsynced.','warning');});
+if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('reveal');observer.unobserve(e.target);}});},{threshold:.1});document.querySelectorAll('.form-heading,.instrument').forEach(el=>observer.observe(el));}
 </script>
 </body>
 </html>
