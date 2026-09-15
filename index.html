@@ -104,7 +104,7 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
 const CONFIG = {
  employeeName:'Rasyid', timezone:'Asia/Jakarta', timezoneLabel:'Jakarta Time',
  googleAppsScriptUrl:'https://script.google.com/macros/s/AKfycbw8qriYaAk6dwfaRMAcrUVeOL0baH7mLQJyEuhtT8Krijreln6sp2Q5UtbU7Vt2Sv2k2w/exec', sheetName:'Timesheet',
- taskRequired:true, maxTaskLength:1000, timeoutMs:25000, statusRefreshMs:120000,
+ taskRequired:true, maxTaskLength:1000, timeoutMs:25000, readTimeoutMs:45000, statusRefreshMs:120000,
  pendingStorageKey:'timesheetPendingEntry', locale:'en-GB', historyPageSize:25,
  taskChips:['Development','Testing','Documentation','Meeting','Support','Monitoring','Bug Fixing','Analysis']
 };
@@ -117,7 +117,8 @@ const pad = n => String(n).padStart(2,'0');
 function zonedParts(date=new Date()) { const p = {}; new Intl.DateTimeFormat('en-GB',{timeZone:CONFIG.timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(date).forEach(v=>{p[v.type]=v.value;}); return p; }
 function todayKey(p=zonedParts()){return p.year+'-'+p.month+'-'+p.day;}
 function validDate(v){const d=new Date(v+'T12:00:00Z');return /^\d{4}-\d{2}-\d{2}$/.test(v)&&!isNaN(d)&&d.toISOString().slice(0,10)===v&&v>='1900-01-01'&&v<='9999-12-31';}
-function prettyDate(v,weekday=false){if(!validDate(v))return 'Choose a valid date.';return new Intl.DateTimeFormat(CONFIG.locale,{day:'numeric',month:'long',year:'numeric',...(weekday?{weekday:'long'}:{}),timeZone:'UTC'}).format(new Date(v+'T12:00:00Z'));}
+const dateFormatters=[false,true].map(weekday=>new Intl.DateTimeFormat(CONFIG.locale,{day:'numeric',month:'long',year:'numeric',...(weekday?{weekday:'long'}:{}),timeZone:'UTC'}));
+function prettyDate(v,weekday=false){if(!validDate(v))return 'Choose a valid date.';return dateFormatters[weekday?1:0].format(new Date(v+'T12:00:00Z'));}
 function updateDate(){ $('formattedDate').textContent=prettyDate($('entryDate').value,true); }
 /* 04. TIME UTILITIES */
 function minutes(t){const [h,m]=t.split(':').map(Number);return h*60+m;}
@@ -127,30 +128,46 @@ function selectedTime(){return pad(hourWheel.value)+':'+pad(minuteWheel.value);}
 /* 05. API */
 function configured(){return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(CONFIG.googleAppsScriptUrl);}
 class ApiError extends Error {constructor(message,code){super(message);this.code=code;}}
-async function api(payload){
+const readRequests = new Map();
+function api(payload){
+ if(!['getStatus','getHistory'].includes(payload.action))return apiRequest(payload);
+ const key=JSON.stringify(payload);
+ if(readRequests.has(key))return readRequests.get(key);
+ const pending=apiRequest(payload).finally(()=>readRequests.delete(key));readRequests.set(key,pending);return pending;
+}
+async function apiRequest(payload){
  if(!configured())throw new ApiError('Google Apps Script belum dikonfigurasi. Isi URL deployment pada CONFIG.','NOT_CONFIGURED');
- const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
+ const readOnly=['getStatus','getHistory'].includes(payload.action);
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),readOnly?CONFIG.readTimeoutMs:CONFIG.timeoutMs);
  try {
   // JSON body with a CORS-safelisted Content-Type avoids an OPTIONS preflight.
   // ContentService redirects are followed. Never use no-cors: it hides the result.
-  const response=await fetch(CONFIG.googleAppsScriptUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow',credentials:'omit',signal:controller.signal});
+  const url=new URL(CONFIG.googleAppsScriptUrl);
+  if(readOnly)Object.entries(payload).forEach(([key,value])=>url.searchParams.set(key,String(value)));
+  const response=await fetch(url.toString(),{...(readOnly?{method:'GET',cache:'no-store'}:{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}),redirect:'follow',credentials:'omit',signal:controller.signal});
   if(!response.ok)throw new ApiError('Unable to connect to Timesheet database. Try again.','NETWORK');
   let result;try{result=await response.json();}catch{throw new ApiError('Invalid server response. Check the Apps Script deployment and access settings.','INVALID_RESPONSE');}
   if(!result || typeof result.success!=='boolean')throw new ApiError('Invalid API response.','INVALID_RESPONSE');
   if(!result.success)throw new ApiError(result.message||'Unable to save your entry.',result.code||'API_ERROR');
   if(payload.action==='getHistory'){
    if(!Array.isArray(result.data)||result.data.some(r=>!r||typeof r.date!=='string'||(r.date!==''&&!validDate(r.date))||(r.clockIn!==''&&!validTime(r.clockIn))||(r.clockOut!==''&&!validTime(r.clockOut))||typeof r.task!=='string'||typeof r.lastUpdated!=='string'))throw new ApiError('Respons riwayat tidak sesuai. Perbarui Code.gs lalu deploy versi baru.','INVALID_RESPONSE');
+   if(payload.offset!==undefined){
+    const page=result.pagination;
+    if(!page)throw new ApiError('Backend belum mendukung pemuatan bertahap. Deploy Code.gs terbaru terlebih dahulu.','BACKEND_UPDATE_REQUIRED');
+    if(!Number.isSafeInteger(page.totalRows)||page.totalRows<0||(page.nextOffset!==null&&(!Number.isSafeInteger(page.nextOffset)||page.nextOffset<=payload.offset||page.nextOffset>=page.totalRows)))throw new ApiError('Respons halaman tidak valid.','INVALID_RESPONSE');
+    return {records:result.data,...page};
+   }
    return result.data;
   }
   if(result.data!==null && (!result.data||result.data.date!==payload.date||!validTime(result.data.clockIn)||(result.data.clockOut!==''&&!validTime(result.data.clockOut))||typeof result.data.task!=='string'))throw new ApiError('Incomplete attendance data received. Refresh to verify your record.','INVALID_RESPONSE');
   if(payload.action!=='getStatus'&&!result.data)throw new ApiError('Save could not be confirmed. Refresh your status.','INVALID_RESPONSE');
   return result.data;
- }catch(error){if(error.name==='AbortError')throw new ApiError('Request timed out. Your entry may have reached the sheet. Refresh status before retrying.','TIMEOUT');if(error instanceof ApiError)throw error;throw new ApiError('Unable to connect to Timesheet database. Check your connection and try again.','NETWORK');}finally{clearTimeout(timeout);}
+ }catch(error){if(error.name==='AbortError')throw new ApiError(readOnly?'Google Sheets belum merespons dalam 45 detik. Data yang sudah dimuat tetap tersedia. Periksa deployment Apps Script, lalu coba Refresh lagi.':'Request timed out. Your entry may have reached the sheet. Refresh status before retrying.','TIMEOUT');if(error instanceof ApiError)throw error;throw new ApiError('Unable to connect to Timesheet database. Check your connection and try again.','NETWORK');}finally{clearTimeout(timeout);}
 }
 /* 06. GOOGLE SHEETS */
 function connection(label,good=false){$('connectionText').textContent=label;$('connection').classList.toggle('good',good);}
 async function refreshStatus(announce=false){
- if(state.statusLoading||state.busy)return;
+ if(state.statusLoading||state.busy||historyState.loading||(!announce&&!$('historyPanel').hidden))return;
  if(!configured()){connection('Not Configured');return;}
  state.statusLoading=true;const version=++state.statusVersion;const date=state.today;$('refresh').disabled=true;connection('Checking connection…');
  try{const record=await api({action:'getStatus',date});if(version!==state.statusVersion||date!==state.today)return;state.record=record;state.statusKnown=true;state.lastStatus=Date.now();connection('Synced with Google Sheets',true);renderStatus();if(announce)toast('Attendance status refreshed.','info');}
@@ -210,31 +227,42 @@ function savePending(payload,show){state.pending=true;let saved=true;try{localSt
 function clearPending(){state.pending=false;try{localStorage.removeItem(CONFIG.pendingStorageKey);}catch{}$('pendingNotice').hidden=true;}
 function restorePending(){try{const draft=JSON.parse(localStorage.getItem(CONFIG.pendingStorageKey)||'null');if(!draft)return;const p=draft.payload;if(draft.endpoint!==CONFIG.googleAppsScriptUrl||draft.employee!==CONFIG.employeeName)return;if(!p||!validDate(p.date)||!['clockIn','clockOut'].includes(p.action)||!validTime(p.clockIn||p.clockOut))return;state.pending=true;changeMode(p.action);$('entryDate').value=p.date;const t=(p.clockIn||p.clockOut).split(':').map(Number);hourWheel.set(t[0]);minuteWheel.set(t[1]);if(typeof p.task==='string')$('tasks').value=p.task.slice(0,CONFIG.maxTaskLength);updateTasks();updateDate();$('pendingNotice').hidden=false;}catch{toast('The saved draft could not be restored.','warning');}}
 /* 16. HISTORY — read-only, all records with local search and pagination */
-const historyState={records:[],loaded:false,loading:false,page:1,stale:true,error:'',updated:null};
+const historyState={records:[],loaded:false,loading:false,page:1,stale:true,error:'',updated:null,progress:''};
 function selectView(view){
  const history=view==='history';
  for(const [id,active] of [['attendanceTab',!history],['historyTab',history]]){$(id).setAttribute('aria-selected',String(active));$(id).tabIndex=active?0:-1;}
  $('attendancePanel').hidden=history;$('historyPanel').hidden=!history;
- if(history&&(!historyState.loaded||historyState.stale))loadHistory();
+ if(history&&!historyState.loaded&&!historyState.error)loadHistory();
 }
 async function loadHistory(){
- if(historyState.loading)return;historyState.loading=true;historyState.error='';$('historyRefresh').disabled=true;$('historyPanel').setAttribute('aria-busy','true');renderHistory();
- try{historyState.records=await api({action:'getHistory'});historyState.loaded=true;historyState.stale=false;historyState.updated=new Date();historyState.page=1;}
+ if(historyState.loading)return;historyState.loading=true;historyState.error='';historyState.progress='Memuat data dari Google Sheets…';$('historyRefresh').disabled=true;$('historyPanel').setAttribute('aria-busy','true');renderHistory();
+ try{
+  const records=[];let offset=0,totalRows;
+  do{
+   const page=await api({action:'getHistory',offset,...(totalRows===undefined?{}:{totalRows})});
+   records.push(...page.records);totalRows=page.totalRows;offset=page.nextOffset;
+   historyState.progress='Memuat '+(offset===null?totalRows:offset)+' / '+totalRows+' baris…';renderHistory();
+  }while(offset!==null);
+  records.sort((a,b)=>b.date.localeCompare(a.date)||(b.rowNumber||0)-(a.rowNumber||0));
+  historyState.records=records;historyState.loaded=true;historyState.stale=false;historyState.updated=new Date();historyState.page=1;
+ }
  catch(error){historyState.stale=true;historyState.error=error.code==='INVALID_ACTION'?'Fitur riwayat belum tersedia di backend. Salin Code.gs terbaru, lalu Deploy → Manage deployments → Edit → New version → Deploy.':error.message;}
  finally{historyState.loading=false;$('historyRefresh').disabled=false;$('historyPanel').setAttribute('aria-busy','false');renderHistory();}
 }
 function recordStatus(r){return !r.clockIn||(r.clockOut&&r.clockOut<r.clockIn)||!r.date?'incomplete':r.clockOut?'complete':'working';}
 function invalidHistoryRange(){return $('historyFrom').value&&$('historyTo').value&&$('historyFrom').value>$('historyTo').value;}
+const historySearchIndex=new WeakMap();
+function historySearchText(r){if(!historySearchIndex.has(r))historySearchIndex.set(r,[r.date,r.date?prettyDate(r.date):'',r.clockIn,r.clockOut,r.task,r.lastUpdated].join(' ').toLocaleLowerCase());return historySearchIndex.get(r);}
 function historyRows(){
  const query=$('historySearch').value.trim().toLocaleLowerCase(),from=$('historyFrom').value,to=$('historyTo').value,status=$('historyStatus').value;
  if(invalidHistoryRange())return [];
- return historyState.records.filter(r=>(!from||(r.date&&r.date>=from))&&(!to||(r.date&&r.date<=to))&&(status==='all'||recordStatus(r)===status)&&(!query||[r.date,r.date?prettyDate(r.date):'',r.clockIn,r.clockOut,r.task,r.lastUpdated].join(' ').toLocaleLowerCase().includes(query)));
+ return historyState.records.filter(r=>(!from||(r.date&&r.date>=from))&&(!to||(r.date&&r.date<=to))&&(status==='all'||recordStatus(r)===status)&&(!query||historySearchText(r).includes(query)));
 }
 function renderHistory(){
  const h=historyState,rows=historyRows(),size=Math.max(1,Math.floor(CONFIG.historyPageSize)||25),pages=Math.max(1,Math.ceil(rows.length/size));h.page=Math.min(h.page,pages);
  $('historyError').hidden=!h.error;$('historyError').textContent=h.error;
  $('historyFilterError').hidden=!invalidHistoryRange();$('historyExport').disabled=h.loading||!h.loaded||!rows.length||!!h.error||h.stale;
- $('historyMeta').textContent=h.loading?'Memuat data dari Google Sheets…':h.loaded?rows.length+' dari '+h.records.length+' catatan · '+(h.error?'Data terakhir; refresh belum berhasil.':'Dimuat '+h.updated.toLocaleTimeString('id-ID',{timeZone:CONFIG.timezone,hour:'2-digit',minute:'2-digit'})+' · '+CONFIG.timezoneLabel):'Data belum berhasil dimuat.';
+ $('historyMeta').textContent=h.loading?h.progress:h.loaded?rows.length+' dari '+h.records.length+' catatan · '+(h.error||h.stale?'Data terakhir; klik Refresh untuk memperbarui.':'Dimuat '+h.updated.toLocaleTimeString('id-ID',{timeZone:CONFIG.timezone,hour:'2-digit',minute:'2-digit'})+' · '+CONFIG.timezoneLabel):'Data belum berhasil dimuat.';
  $('historyMessage').hidden=rows.length>0;$('historyMessage').textContent=h.loading&&!h.loaded?'Mengambil riwayat…':!h.loaded?'Riwayat belum tersedia. Periksa koneksi, kemudian klik Refresh.':!h.records.length?'Belum ada data di Google Sheets.': 'Tidak ada catatan yang cocok dengan pencarian.';
  $('historyTable').hidden=!rows.length;$('historyPager').hidden=!rows.length;$('historyBody').replaceChildren();
  for(const r of rows.slice((h.page-1)*size,h.page*size)){
