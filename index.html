@@ -99,18 +99,24 @@
     flex:0 0 auto;
     padding:8px 16px;
     border-bottom:1px dashed var(--brass-dk);
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+    flex-wrap:wrap;
   }
   .status-bar .date-label{
     font-size:0.68rem; color:var(--ink-muted); letter-spacing:0.01em;
+    flex:1 1 auto; min-width:64px; padding-top:2px;
   }
   .status-pill{
-    display:inline-flex; align-items:center; gap:5px;
+    display:inline-flex; align-items:flex-start; gap:5px;
     font-size:0.65rem; font-weight:700; letter-spacing:0.03em;
     padding:4px 9px; border-radius:2px;
     border:1px solid var(--brass-dk);
     background:var(--paper-dark);
-    white-space:nowrap;
+    flex:0 1 auto; min-width:0; max-width:100%;
+  }
+  .status-pill .dot{ flex:0 0 auto; margin-top:3px; }
+  .status-pill span:last-child{
+    white-space:normal; word-break:break-word; min-width:0;
   }
   .status-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--ink-muted);}
   .status-pill.in .dot{background:var(--stamp-red);}
