@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f4efe6"><title>Daily Timekeeper · Employee Timesheet</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Timekeeper">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 /* 01. ROOT & VARIABLES */
 :root{--paper:#f4efe6;--white:#fffcf7;--ink:#252923;--muted:#6d6b61;--line:#d9d2c5;--green:#344c3c;--brass:#9b7747;--mono:'Courier New',monospace;--serif:Georgia,'Times New Roman',serif;--shadow:0 20px 55px #43362112;--row:52px}
@@ -38,6 +45,8 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
 .view-tabs{display:flex;gap:24px;padding:0 36px;border-bottom:1px solid var(--line);background:#faf7f0}.view-tab{border:0;border-bottom:3px solid transparent;background:none;padding:15px 2px;font-size:14px;color:var(--muted)}.view-tab[aria-selected=true]{border-bottom-color:var(--green);color:var(--green);font-weight:650}.history{padding:30px 36px;min-height:440px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.history-head p{font-size:13px;color:var(--muted);margin-top:6px}.history-refresh,.pager button{background:var(--white);border:1px solid var(--line);border-radius:5px;padding:9px 13px;font-size:13px;display:inline-flex;gap:7px;align-items:center}.history-search{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.history-search input{padding:11px 13px;border:1px solid var(--line);border-radius:5px;flex:1;min-width:180px;background:var(--white);font-size:14px}.history-search label{font-size:14px}.history-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:6px;max-height:620px}.history table{border-collapse:collapse;width:100%;font-size:13px;min-width:770px;text-align:left}.history th{font:11px var(--mono);letter-spacing:.06em;background:#eee9de;position:sticky;top:0;padding:14px 12px;white-space:nowrap}.history td{padding:14px 12px;border-top:1px solid var(--line);vertical-align:top}.history tbody tr:nth-child(even){background:#f8f5ed}.history td:first-child{white-space:nowrap}.history .task-cell{white-space:pre-wrap;overflow-wrap:anywhere;min-width:200px;max-width:360px}.history .time-cell{font-family:var(--mono);white-space:nowrap}.history .updated-cell{font-size:12px;color:var(--muted)}.history-message{border:1px dashed var(--line);border-radius:6px;padding:35px 20px;text-align:center;color:var(--muted);font-size:14px}.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--muted)}.pager>div{display:flex;gap:8px}.history-meta{font-size:12px;color:var(--muted);margin-bottom:14px}.history .notice{margin-bottom:14px}@media(max-width:700px){.view-tabs{padding:0 22px}.history{padding:23px 18px}.history-head{align-items:flex-start}.history-head h2{font-size:23px}.history-refresh{padding:9px;font-size:12px}.history-head p{font-size:12px}.history-table-wrap{max-height:520px}}
 
 .history-filters{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:0 0 16px}.history-filters label{display:grid;gap:6px;font-size:13px;flex:1;min-width:150px}.history-filters input,.history-filters select{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink);font:14px "Segoe UI",sans-serif}.history-export{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}.history-export span{font-size:12px;color:var(--muted)}#historyExport{background:var(--green);color:var(--white);border-color:var(--green)}#historyExport:disabled{cursor:not-allowed}select:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+.install-button{border:1px solid var(--line);border-radius:5px;padding:8px 12px;background:var(--white);color:var(--green);font-size:13px}.footer{align-items:center;flex-wrap:wrap}.install-instructions{text-align:left;margin:20px 0;font-size:14px;line-height:1.7}.install-instructions p+p{margin-top:12px}#installHelp{max-height:calc(100dvh - 32px);overflow:auto}#installHelp .notice{text-align:left}
+@media(display-mode:standalone){.page{padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}}
 </style>
 </head>
 <body>
@@ -79,10 +88,11 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
    <div class="pager" id="historyPager" hidden><span id="historyPageInfo"></span><div><button type="button" id="historyPrev">← Sebelumnya</button><button type="button" id="historyNext">Berikutnya →</button></div></div>
   </section>
  </main>
- <footer class="footer"><span>TIMEKEEPER © <span id="footerYear"></span> <span style="margin:0 7px">/</span> Attendance & Daily Work Log</span><span class="connection" id="connection"><span class="dot"></span><span id="connectionText">Not Configured</span></span></footer>
+ <footer class="footer"><span>TIMEKEEPER © <span id="footerYear"></span> <span style="margin:0 7px">/</span> Attendance & Daily Work Log</span><button type="button" class="install-button" id="installApp">＋ Install App</button><span class="connection" id="connection"><span class="dot"></span><span id="connectionText">Not Configured</span></span></footer>
 </div>
 <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 <dialog id="successModal" aria-labelledby="successTitle"><div class="stamp"><svg><use href="#check"/></svg></div><p class="eyebrow">Time record · confirmed</p><h2 id="successTitle">Clocked In</h2><div class="result-time" id="resultTime"></div><p class="result-date" id="resultDate"></p><div class="receipt" id="receipt" hidden><span>Clock In<b id="receiptIn"></b></span><span>Clock Out<b id="receiptOut"></b></span><span>Total<b id="receiptTotal"></b></span></div><p class="subtitle">Successfully saved to Google Sheets.</p><button class="primary" id="closeModal">DONE</button></dialog>
+<dialog id="installHelp" aria-labelledby="installHelpTitle"><p class="eyebrow">Timekeeper di layar utama</p><h2 id="installHelpTitle">Pasang aplikasi.</h2><div id="installRequirement" class="notice" style="margin-top:16px" hidden></div><div class="install-instructions"><p><strong>Android</strong><br>Buka website di Chrome → menu ⋮ → <strong>Install app</strong> atau <strong>Tambahkan ke layar utama</strong> → konfirmasi.</p><p><strong>iPhone / iPad</strong><br>Buka website di Safari → <strong>Bagikan</strong> → <strong>Tambahkan ke Layar Utama</strong> → <strong>Tambah</strong>.</p><p>Setelah dipasang, buka melalui ikon Timekeeper. Koneksi internet tetap diperlukan untuk membaca dan menyimpan data Google Sheets.</p></div><button type="button" class="primary" id="closeInstallHelp">MENGERTI</button></dialog>
 <script>
 'use strict';
 /* 01. CONFIG
@@ -321,6 +331,37 @@ CONFIG.taskChips.forEach(label=>{const button=document.createElement('button');b
 $('modeIn').onclick=()=>changeMode('clockIn');$('modeOut').onclick=()=>changeMode('clockOut');$('useNow').onclick=()=>useCurrentTime();$('entryDate').onchange=()=>{updateDate();hideError();};$('tasks').oninput=updateTasks;$('attendanceForm').onsubmit=submitEntry;$('refresh').onclick=()=>refreshStatus(true);$('missingIn').onclick=()=>changeMode('clockIn');$('closeModal').onclick=()=>$('successModal').close();$('successModal').addEventListener('close',()=>$('submit').focus());$('discard').onclick=()=>{clearPending();hideError();$('tasks').value='';$('entryDate').value=state.today;updateDate();updateTasks();useCurrentTime();toast('Local draft discarded.','info');};$('statusAction').onclick=()=>{if(state.pending){toast('Finish or discard your unsynced draft first.','warning');return;}$('entryDate').value=state.today;updateDate();changeMode(state.record?'clockOut':'clockIn');if(state.record?.clockOut){$('tasks').value=state.record.task;updateTasks();const [h,m]=state.record.clockOut.split(':').map(Number);hourWheel.set(h,true);minuteWheel.set(m,true);}$('modeOut').scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth',block:'nearest'});};
 tick();useCurrentTime(false);restorePending();refreshStatus();setInterval(tick,1000);setInterval(()=>{if(!document.hidden)refreshStatus();},CONFIG.statusRefreshMs);document.addEventListener('visibilitychange',()=>{if(!document.hidden){tick();if(Date.now()-state.lastStatus>30000)refreshStatus();}});window.addEventListener('online',()=>{toast('Connection restored. Review and submit any unsynced entry.');refreshStatus();});window.addEventListener('offline',()=>{connection('Offline');toast('You are offline. Entries will remain unsynced.','warning');});
 if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('reveal');observer.unobserve(e.target);}});},{threshold:.1});document.querySelectorAll('.form-heading,.instrument').forEach(el=>observer.observe(el));}
+/* 18. INSTALLABLE WEB APP */
+let installPrompt=null;
+const standaloneMode=matchMedia('(display-mode: standalone)');
+function installedView(){return standaloneMode.matches||navigator.standalone===true;}
+function syncInstallButton(){$('installApp').hidden=installedView();}
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;syncInstallButton();});
+window.addEventListener('appinstalled',()=>{installPrompt=null;$('installApp').hidden=true;if($('installHelp').open)$('installHelp').close();toast('Timekeeper sudah ditambahkan ke layar utama.','success');});
+standaloneMode.addEventListener('change',syncInstallButton);
+$('installApp').onclick=async()=>{
+ if(installPrompt){const prompt=installPrompt;installPrompt=null;$('installApp').disabled=true;
+  try{await prompt.prompt();await prompt.userChoice;}catch{toast('Gunakan menu browser untuk menambahkan aplikasi ke layar utama.','info');}finally{$('installApp').disabled=false;}return;
+ }
+ const localFile=location.protocol==='file:';
+ const insecure=!window.isSecureContext;
+ $('installRequirement').hidden=!(localFile||insecure);
+ $('installRequirement').textContent=localFile?'Buka alamat website HTTPS di HP. Instalasi tidak tersedia ketika membuka file HTML langsung.':'Buka website melalui HTTPS agar aplikasi dapat dipasang.';
+ $('installHelp').showModal();
+};
+$('closeInstallHelp').onclick=()=>$('installHelp').close();
+$('installHelp').addEventListener('close',()=>$('installApp').focus());
+syncInstallButton();
+if('serviceWorker' in navigator&&window.isSecureContext&&['https:','http:'].includes(location.protocol)){
+ window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(registration=>{
+   const notifyUpdate=()=>toast('Versi baru tersedia. Setelah selesai mengisi, tutup semua jendela Timekeeper lalu buka kembali.','info');
+   if(registration.waiting)notifyUpdate();
+   registration.addEventListener('updatefound',()=>{const worker=registration.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)notifyUpdate();});});
+  }).catch(()=>toast('Mode offline belum aktif. Pastikan seluruh file aplikasi diunggah bersama.','warning'));
+ });
+}
+
 </script>
 </body>
 </html>
