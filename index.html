@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f4efe6"><title>Daily Timekeeper · Employee Timesheet</title>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest?v=2">
+<link rel="icon" href="./favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/svg+xml" href="./icons/logo.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png?v=2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Timekeeper">
@@ -52,7 +55,7 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
 <body>
 <svg aria-hidden="true" style="display:none"><symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol><symbol id="arrow-in" viewBox="0 0 24 24"><path d="M14 4h5v16h-5M3 12h12m-4-4 4 4-4 4"/></symbol><symbol id="arrow-out" viewBox="0 0 24 24"><path d="M10 4H5v16h5m0-8h11m-4-4 4 4-4 4"/></symbol><symbol id="calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5h2m2 0h2"/></symbol><symbol id="refresh" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-1 7M20 4v6h-6"/></symbol><symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol></svg>
 <div class="page">
- <nav class="masthead" aria-label="Application"><div class="brand"><span class="brand-icon"><svg><use href="#clock"/></svg></span>TIMEKEEPER<span class="meta"> / </span></div><span class="meta">A little order in your everyday.</span><div class="employee"><span class="avatar" id="initial">R</span><span id="employeeName">Rasyid</span></div></nav>
+ <nav class="masthead" aria-label="Application"><div class="brand"><img src="./icons/icon-192.png?v=2" width="32" height="32" alt="" style="border-radius:8px">TIMEKEEPER<span class="meta"> / </span></div><span class="meta">A little order in your everyday.</span><div class="employee"><span class="avatar" id="initial">R</span><span id="employeeName">Rasyid</span></div></nav>
  <main class="shell">
   <header class="header"><div><p class="eyebrow">Employee timesheet</p><h1>Daily Timekeeper<span style="color:var(--brass)">.</span></h1><p class="subtitle">Record your attendance and daily work.</p></div><div class="calendar" aria-label="Today's date"><div class="day" id="badgeDay">—</div><strong id="badgeDate">—</strong><small id="badgeYear">—</small></div></header>
   <div class="view-tabs" role="tablist" aria-label="Timesheet views"><button type="button" class="view-tab" id="attendanceTab" role="tab" aria-selected="true" aria-controls="attendancePanel">Absensi</button><button type="button" class="view-tab" id="historyTab" role="tab" aria-selected="false" aria-controls="historyPanel" tabindex="-1">Riwayat</button></div>
@@ -92,7 +95,7 @@ dialog{border:1px solid #c4baa7;border-radius:10px;padding:34px;max-width:420px;
 </div>
 <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 <dialog id="successModal" aria-labelledby="successTitle"><div class="stamp"><svg><use href="#check"/></svg></div><p class="eyebrow">Time record · confirmed</p><h2 id="successTitle">Clocked In</h2><div class="result-time" id="resultTime"></div><p class="result-date" id="resultDate"></p><div class="receipt" id="receipt" hidden><span>Clock In<b id="receiptIn"></b></span><span>Clock Out<b id="receiptOut"></b></span><span>Total<b id="receiptTotal"></b></span></div><p class="subtitle">Successfully saved to Google Sheets.</p><button class="primary" id="closeModal">DONE</button></dialog>
-<dialog id="installHelp" aria-labelledby="installHelpTitle"><p class="eyebrow">Timekeeper di layar utama</p><h2 id="installHelpTitle">Pasang aplikasi.</h2><div id="installRequirement" class="notice" style="margin-top:16px" hidden></div><div class="install-instructions"><p><strong>Android</strong><br>Buka website di Chrome → menu ⋮ → <strong>Install app</strong> atau <strong>Tambahkan ke layar utama</strong> → konfirmasi.</p><p><strong>iPhone / iPad</strong><br>Buka website di Safari → <strong>Bagikan</strong> → <strong>Tambahkan ke Layar Utama</strong> → <strong>Tambah</strong>.</p><p>Setelah dipasang, buka melalui ikon Timekeeper. Koneksi internet tetap diperlukan untuk membaca dan menyimpan data Google Sheets.</p></div><button type="button" class="primary" id="closeInstallHelp">MENGERTI</button></dialog>
+<dialog id="installHelp" aria-labelledby="installHelpTitle"><p class="eyebrow">Timekeeper di layar utama</p><h2 id="installHelpTitle">Pasang aplikasi.</h2><div id="installRequirement" class="notice" style="margin-top:16px" hidden></div><div class="install-instructions"><p><strong>Android</strong><br>Buka website di Chrome → menu ⋮ → <strong>Install app</strong> atau <strong>Tambahkan ke layar utama</strong> → konfirmasi.</p><p><strong>iPhone / iPad</strong><br>Buka website di Safari → <strong>Bagikan</strong> → <strong>Tambahkan ke Layar Utama</strong> → <strong>Tambah</strong>.</p><p>Setelah dipasang, buka melalui ikon Timekeeper. Koneksi internet tetap diperlukan untuk membaca dan menyimpan data Google Sheets.</p></div><p style="font-size:13px;margin:16px 0"><a href="./install-check.html">Periksa file instalasi</a></p><button type="button" class="primary" id="closeInstallHelp">MENGERTI</button></dialog>
 <script>
 'use strict';
 /* 01. CONFIG

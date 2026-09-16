@@ -1,0 +1,21 @@
+TIMEKEEPER — INSTALASI MOBILE
+
+1. Ekstrak ZIP. Upload SEMUA file dan folder di dalamnya ke root website.
+   Jangan hanya mengganti index.html. Pastikan folder icons ikut terunggah.
+2. Untuk Vercel static: Framework Preset = Other; tidak perlu build command.
+   Gunakan direktori yang berisi index.html sebagai root proyek.
+   Jika proyek sudah memiliki vercel.json, gabungkan pengaturan headers-nya.
+3. Buka https://ALAMAT-WEBSITE/install-check.html lalu klik Periksa sekarang.
+   Manifest harus berupa JSON, ikon harus PNG, sw.js harus JavaScript.
+   Hindari rewrite semua alamat ke index.html yang menutupi file-file ini.
+4. Setelah deploy sukses, tutup seluruh jendela Timekeeper lalu buka kembali.
+   Android Chrome: menu titik tiga > Install app / Tambahkan ke layar utama.
+   Atau tekan Install App di halaman Timekeeper saat browser mengizinkan.
+   iPhone: Safari > Bagikan > Tambahkan ke Layar Utama > Tambah.
+
+Jika Chrome masih menampilkan 'This app cannot be installed', kirim URL
+website lengkap dan hasil halaman install-check.html untuk diagnosis.
+Jangan hapus data situs saat masih ada draft Not synced.
+
+Paket ini memperbarui tampilan dan instalasi; Code.gs tidak perlu diganti
+khusus untuk perubahan logo/PWA ini. Data Sheets tetap memerlukan internet.
